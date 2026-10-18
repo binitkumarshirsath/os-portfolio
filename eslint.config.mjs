@@ -32,6 +32,7 @@ const eslintConfig = defineConfig([
   {
     // Server code may log (e.g. which model served a request); client code may not.
     files: ["src/**/*.{ts,tsx}"],
+    ignores: ["src/**/server/**"],
     rules: { "no-console": "error" },
   },
   // Override default ignores of eslint-config-next.
