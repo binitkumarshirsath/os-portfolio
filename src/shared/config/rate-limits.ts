@@ -3,8 +3,12 @@
  * (the "7 / 10 messages left this hour" meter), so they can't drift apart.
  */
 export const RATE_LIMITS = {
-  /** Per visitor (hashed IP), sliding window. */
-  perVisitor: { requests: 10, window: "1 h" },
+  /**
+   * Per visitor (hashed IP), sliding window. Recruiters rarely type more than a
+   * handful of questions; 20 leaves room to explore while one visitor can still
+   * only take about a twelfth of the daily budget below.
+   */
+  perVisitor: { requests: 20, window: "1 h" },
   /**
    * Across all visitors, fixed window. One agent turn can make ~3 model calls,
    * so this keeps the site under the providers' free-tier daily limits.

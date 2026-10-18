@@ -3,7 +3,7 @@
 //        BASE_URL=https://your.site npm run test:rate-limit
 //
 // Each run pretends to be a new visitor (random IP), so it never touches your own
-// hourly quota. It does use 10 of the site-wide daily budget per run.
+// hourly quota. It does use one per-visitor limit's worth of the site-wide daily budget.
 
 const BASE_URL = process.env.BASE_URL ?? "http://localhost:3000";
 const fakeIp = `203.0.113.${Math.floor(Math.random() * 254) + 1}`; // TEST-NET-3, never a real visitor
@@ -34,13 +34,21 @@ await send("{not json", "malformed JSON");
 await send(question("x".repeat(501)), "501-character question");
 await send(question("   "), "blank question");
 
-console.log("\nRate limit (expect 10 x 200, then 429):");
-const statuses = [];
-for (let i = 1; i <= 11; i++)
-  statuses.push(await send(question("What's your best project?"), `request ${i}`));
+// Read the limit from the API, so this script can't go stale when the config changes.
+const quota = await fetch(`${BASE_URL}/api/chat`, {
+  headers: { "x-forwarded-for": fakeIp },
+});
+const { limit } = await quota.json();
 
-const passed = statuses.slice(0, 10).every((s) => s === 200) && statuses[10] === 429;
+console.log(`\nRate limit (expect ${limit} x 200, then 429):`);
+const statuses = [];
+for (let i = 1; i <= limit + 1; i++) {
+  statuses.push(await send(question("What's your best project?"), `request ${i}`));
+}
+
+const passed =
+  statuses.slice(0, limit).every((s) => s === 200) && statuses[limit] === 429;
 console.log(
-  `\n${passed ? "PASS" : "FAIL"}: the 11th request was ${passed ? "" : "not "}rate-limited.`,
+  `\n${passed ? "PASS" : "FAIL"}: request ${limit + 1} was ${passed ? "" : "not "}rate-limited.`,
 );
 process.exit(passed ? 0 : 1);
