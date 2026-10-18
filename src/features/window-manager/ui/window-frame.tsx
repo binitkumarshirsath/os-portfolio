@@ -13,14 +13,19 @@ type WindowFrameProps = {
   children: ReactNode;
 };
 
+const MAXIMIZED_INSET = 12;
+
 export function WindowFrame({ id, boundsRef, children }: WindowFrameProps) {
   const { title, frame } = windowRegistry[id];
   const stackIndex = useWindowStore((state) => state.stack.indexOf(id));
   const isFocused = useWindowStore((state) => state.focusedId === id);
+  const isMaximized = useWindowStore((state) => state.maximizedIds.includes(id));
   const hasFocusRequest = useWindowStore((state) => state.focusRequestId === id);
   const savedOffset = useWindowStore((state) => state.offsets[id]);
   const focusWindow = useWindowStore((state) => state.focusWindow);
   const closeWindow = useWindowStore((state) => state.closeWindow);
+  const minimizeWindow = useWindowStore((state) => state.minimizeWindow);
+  const toggleMaximize = useWindowStore((state) => state.toggleMaximize);
   const moveWindow = useWindowStore((state) => state.moveWindow);
   const clearFocusRequest = useWindowStore((state) => state.clearFocusRequest);
 
@@ -42,14 +47,34 @@ export function WindowFrame({ id, boundsRef, children }: WindowFrameProps) {
     clearFocusRequest();
   }, [hasFocusRequest, clearFocusRequest]);
 
+  const dockButton = () =>
+    document.querySelector<HTMLElement>(`[data-window-trigger="${id}"]`);
+
   function close() {
     closeWindow(id);
     // Windows open on first load have no opener, so fall back to their dock button.
-    const target =
-      returnFocusRef.current ??
-      document.querySelector<HTMLElement>(`[data-window-trigger="${id}"]`);
+    const target = returnFocusRef.current ?? dockButton();
     if (target?.isConnected) target.focus();
   }
+
+  function minimize() {
+    minimizeWindow(id);
+    // The window now lives in the dock, so that's where focus goes.
+    dockButton()?.focus();
+  }
+
+  // Maximized windows ignore their frame and drag offset; the offset is kept for restore.
+  const placement = isMaximized
+    ? { x: 0, y: 0, inset: MAXIMIZED_INSET }
+    : {
+        x,
+        y,
+        top: frame.top,
+        right: frame.right,
+        width: frame.width,
+        height: frame.height,
+        maxHeight: `calc(100% - ${frame.top + 16}px)`,
+      };
 
   return (
     <motion.div
@@ -57,7 +82,7 @@ export function WindowFrame({ id, boundsRef, children }: WindowFrameProps) {
       role="dialog"
       aria-labelledby={titleId}
       tabIndex={-1}
-      drag
+      drag={!isMaximized}
       dragListener={false}
       dragControls={dragControls}
       dragConstraints={boundsRef}
@@ -73,18 +98,17 @@ export function WindowFrame({ id, boundsRef, children }: WindowFrameProps) {
       }}
       initial={{ opacity: 0, scale: 0.96 }}
       animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.96 }}
-      transition={{ duration: 0.18, ease: "easeOut" }}
-      style={{
-        x,
-        y,
-        zIndex: 10 + stackIndex,
-        top: frame.top,
-        right: frame.right,
-        width: frame.width,
-        height: frame.height,
-        maxHeight: `calc(100% - ${frame.top + 16}px)`,
+      exit="exit"
+      // AnimatePresence passes the minimized ids as `custom`: a window that's leaving
+      // can't re-render to learn *why* it left. Minimizing drops it toward the dock.
+      variants={{
+        exit: (minimizedIds: WindowId[] = []) =>
+          minimizedIds.includes(id)
+            ? { opacity: 0, scale: 0.9, y: 120 }
+            : { opacity: 0, scale: 0.96 },
       }}
+      transition={{ duration: 0.18, ease: "easeOut" }}
+      style={{ ...placement, zIndex: 10 + stackIndex }}
       className={`pointer-events-auto absolute flex flex-col overflow-hidden rounded-md border bg-surface shadow-[0_24px_60px_-24px_rgb(0_0_0/0.9)] outline-none ${
         isFocused ? "border-accent-deep" : "border-line"
       }`}
@@ -93,8 +117,13 @@ export function WindowFrame({ id, boundsRef, children }: WindowFrameProps) {
         titleId={titleId}
         title={title}
         isFocused={isFocused}
+        isMaximized={isMaximized}
         onClose={close}
-        onDragStart={(event) => dragControls.start(event)}
+        onMinimize={minimize}
+        onToggleMaximize={() => toggleMaximize(id)}
+        onDragStart={(event) => {
+          if (!isMaximized) dragControls.start(event);
+        }}
       />
       <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
     </motion.div>

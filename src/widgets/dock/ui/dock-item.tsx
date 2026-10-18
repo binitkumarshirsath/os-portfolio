@@ -23,7 +23,8 @@ function Tooltip({ children }: { children: ReactNode }) {
 type DockButtonProps = {
   label: string;
   icon: LucideIcon;
-  isOpen: boolean;
+  /** Open shows a red dot; minimized shows a hollow one, like a parked app. */
+  state: "open" | "minimized" | "closed";
   /** Lets a closing window hand focus back to its dock button. */
   windowId: string;
   onClick: () => void;
@@ -32,7 +33,7 @@ type DockButtonProps = {
 export function DockButton({
   label,
   icon: Icon,
-  isOpen,
+  state,
   windowId,
   onClick,
 }: DockButtonProps) {
@@ -40,7 +41,7 @@ export function DockButton({
     <li className="group relative">
       <motion.button
         type="button"
-        aria-label={label}
+        aria-label={state === "minimized" ? `${label} (minimized)` : label}
         data-window-trigger={windowId}
         onClick={onClick}
         className={iconButtonClass}
@@ -49,10 +50,12 @@ export function DockButton({
         <Icon aria-hidden className="size-5" />
       </motion.button>
       <Tooltip>{label}</Tooltip>
-      {isOpen && (
+      {state !== "closed" && (
         <span
           aria-hidden
-          className="absolute -bottom-1 left-1/2 size-1 -translate-x-1/2 rounded-full bg-accent"
+          className={`absolute -bottom-1 left-1/2 size-1.5 -translate-x-1/2 rounded-full ${
+            state === "open" ? "bg-accent" : "border border-accent"
+          }`}
         />
       )}
     </li>

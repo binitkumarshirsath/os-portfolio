@@ -41,6 +41,12 @@
     font-family: var(--font-sans);
   }
 
+  /* Tailwind v4 resets buttons to the default arrow; anything clickable should say so. */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+
   /* One focus style everywhere: red and always visible for keyboard users. */
   :focus-visible {
     outline: 2px solid var(--color-accent);

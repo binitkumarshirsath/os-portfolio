@@ -11,6 +11,7 @@ import { DockButton, DockLink } from "./dock-item";
 
 export function Dock() {
   const stack = useWindowStore((state) => state.stack);
+  const minimizedIds = useWindowStore((state) => state.minimizedIds);
   const openWindow = useWindowStore((state) => state.openWindow);
 
   return (
@@ -25,7 +26,13 @@ export function Dock() {
             windowId={id}
             label={windowRegistry[id].title}
             icon={windowRegistry[id].icon}
-            isOpen={stack.includes(id)}
+            state={
+              minimizedIds.includes(id)
+                ? "minimized"
+                : stack.includes(id)
+                  ? "open"
+                  : "closed"
+            }
             onClick={() => openWindow(id)}
           />
         ))}
