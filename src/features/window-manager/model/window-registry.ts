@@ -18,7 +18,8 @@ export { WINDOW_IDS, type WindowId };
 type DesktopFrame = {
   top: number;
   right: number;
-  width: number;
+  /** px, or a CSS length for windows that should grow with the screen. */
+  width: number | string;
   height: number;
 };
 
@@ -42,7 +43,14 @@ export const windowRegistry: Record<WindowId, WindowDefinition> = {
     icon: MessageSquareText,
     inDock: true,
     mobileTab: "Ask",
-    frame: { top: 40, right: 356, width: 320, height: 520 },
+    // Fills the gap between the hero and the right column, between 320px and 440px.
+    // --hero-end is set by the desktop to where the hero text stops.
+    frame: {
+      top: 40,
+      right: 356,
+      width: "clamp(320px, calc(100% - 356px - var(--hero-end)), 440px)",
+      height: 560,
+    },
   },
   projects: {
     title: "Projects",

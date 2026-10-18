@@ -27,10 +27,12 @@ export function Desktop({ bodies }: DesktopProps) {
   );
 
   return (
-    <main className="relative min-h-0 flex-1 overflow-hidden">
+    // --hero-end: the hero's right edge plus a gap. The chat window sizes itself
+    // against it, so it grows on wide screens without covering the hero buttons.
+    <main className="relative min-h-0 flex-1 overflow-hidden [--hero-end:368px] xl:[--hero-end:484px]">
       <SunBackdrop />
 
-      <div className="absolute top-1/2 left-12 w-[19rem] -translate-y-1/2 xl:left-20 xl:w-[28rem]">
+      <div className="absolute top-1/2 left-12 w-[19rem] -translate-y-1/2 xl:left-20 xl:w-[24rem]">
         <ProfileHero />
       </div>
 

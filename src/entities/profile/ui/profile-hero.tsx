@@ -14,7 +14,7 @@ type ProfileHeroProps = {
 export function ProfileHero({ compact = false }: ProfileHeroProps) {
   return (
     <section aria-labelledby="hero-name" className={compact ? "space-y-3" : "space-y-5"}>
-      <p className="font-mono text-xs tracking-[0.2em] text-accent-text uppercase">
+      <p className="font-mono text-xs tracking-[0.14em] text-accent-text uppercase">
         {profile.role} · {profile.level} · {profile.location}
       </p>
       <h1
