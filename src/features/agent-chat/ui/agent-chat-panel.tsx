@@ -2,10 +2,12 @@
 
 import { useChat } from "@ai-sdk/react";
 import { useEffect, useRef, type ReactNode } from "react";
+import type { UiAction } from "@/shared/config/ui-actions";
 import { profile } from "@/shared/content";
 import { agentChat } from "../model/agent-chat";
 import { describeChatError } from "../model/chat-error";
 import { useChatQuota } from "../model/chat-quota";
+import { connectToolRunner } from "../model/tool-action-bridge";
 import { ChatComposer } from "./chat-composer";
 import { ChatErrorNotice } from "./chat-error-notice";
 import { ChatMessage, ThinkingIndicator } from "./chat-message";
@@ -14,11 +16,20 @@ import { QuotaMeter } from "./quota-meter";
 type AgentChatPanelProps = {
   /** Suggestion chips, supplied by whoever composes the chat (the quick-actions feature). */
   suggestions: ReactNode;
-  /** Shown as the way out when the agent can't answer. */
-  onShowContact: () => void;
+  /** Runs a UI action: tool-chip taps, and the "Contact Binit" way out on errors. */
+  onUiAction: (action: UiAction) => void;
+  /**
+   * Run the agent's tool calls as they arrive. On for the desktop, where windows
+   * open beside the chat; off on phones, where a panel would cover the answer.
+   */
+  runToolsAutomatically: boolean;
 };
 
-export function AgentChatPanel({ suggestions, onShowContact }: AgentChatPanelProps) {
+export function AgentChatPanel({
+  suggestions,
+  onUiAction,
+  runToolsAutomatically,
+}: AgentChatPanelProps) {
   const { messages, sendMessage, regenerate, status, error } = useChat({
     chat: agentChat,
   });
@@ -31,6 +42,10 @@ export function AgentChatPanel({ suggestions, onShowContact }: AgentChatPanelPro
   const hasMessages = messages.length > 0;
   // Changes on every streamed token, so the view follows a growing answer.
   const lastMessageSize = JSON.stringify(messages.at(-1)?.parts ?? []).length;
+
+  useEffect(() => {
+    if (runToolsAutomatically) return connectToolRunner(onUiAction);
+  }, [runToolsAutomatically, onUiAction]);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ block: "end" });
@@ -56,14 +71,14 @@ export function AgentChatPanel({ suggestions, onShowContact }: AgentChatPanelPro
           className="space-y-4"
         >
           {messages.map((message) => (
-            <ChatMessage key={message.id} message={message} />
+            <ChatMessage key={message.id} message={message} onUiAction={onUiAction} />
           ))}
         </ul>
         {status === "submitted" && <ThinkingIndicator />}
         {chatError && (
           <ChatErrorNotice
             error={chatError}
-            onShowContact={onShowContact}
+            onShowContact={() => onUiAction({ type: "showContact" })}
             onRetry={() => regenerate()}
           />
         )}

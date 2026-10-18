@@ -1,14 +1,16 @@
 import { Chat } from "@ai-sdk/react";
 import { DefaultChatTransport, generateId, type UIMessage } from "ai";
 import { RATE_LIMIT_HEADERS } from "@/shared/config/rate-limits";
+import type { AgentTools } from "./agent-tools";
 import { useChatQuota } from "./chat-quota";
+import { runToolCall } from "./tool-action-bridge";
 
 export type AgentMessageMetadata = {
   /** "quick-action" answers were written locally from content; no model was called. */
   source: "quick-action" | "model";
 };
 
-export type AgentMessage = UIMessage<AgentMessageMetadata>;
+export type AgentMessage = UIMessage<AgentMessageMetadata, never, AgentTools>;
 
 /** Wraps fetch so every chat response updates the quota meter from its header. */
 async function fetchAndTrackQuota(input: RequestInfo | URL, init?: RequestInit) {
@@ -25,6 +27,9 @@ async function fetchAndTrackQuota(input: RequestInfo | URL, init?: RequestInit) 
  */
 export const agentChat = new Chat<AgentMessage>({
   transport: new DefaultChatTransport({ api: "/api/chat", fetch: fetchAndTrackQuota }),
+  // Fires as soon as a tool's input has streamed in, so a window can open while
+  // the model is still writing the answer that goes with it.
+  onToolCall: ({ toolCall }) => runToolCall(toolCall),
 });
 
 function textMessage(

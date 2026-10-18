@@ -14,8 +14,8 @@ const actionClass =
 export function ChatErrorNotice({ error, onShowContact, onRetry }: ChatErrorNoticeProps) {
   // When the agent is out for the day, the best next step is reaching Binit directly.
   const offerContact = error.code === "daily_limit" || error.code === "model_unavailable";
-  // Only a dropped connection is worth an immediate retry; limits won't change in seconds.
-  const offerRetry = error.code === "network";
+  // Dropped connections and provider spikes clear quickly; the daily and hourly caps don't.
+  const offerRetry = error.code === "network" || error.code === "model_unavailable";
 
   return (
     <div role="status" className="space-y-1">
