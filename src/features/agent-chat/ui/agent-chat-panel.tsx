@@ -23,12 +23,15 @@ type AgentChatPanelProps = {
    * open beside the chat; off on phones, where a panel would cover the answer.
    */
   runToolsAutomatically: boolean;
+  /** Extra control in the input row, supplied by another feature (the JD paperclip). */
+  composerAccessory?: ReactNode;
 };
 
 export function AgentChatPanel({
   suggestions,
   onUiAction,
   runToolsAutomatically,
+  composerAccessory,
 }: AgentChatPanelProps) {
   const { messages, sendMessage, regenerate, status, error } = useChat({
     chat: agentChat,
@@ -101,6 +104,7 @@ export function AgentChatPanel({
               : "Ask about his work…"
           }
           onSend={(text) => sendMessage({ text })}
+          accessory={composerAccessory}
         />
         <QuotaMeter />
       </div>

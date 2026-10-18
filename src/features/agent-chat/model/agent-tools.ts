@@ -21,7 +21,7 @@ const shownToVisitor = (shown: string) => ({
 export const agentTools = {
   openWindow: tool({
     description:
-      "Open a window on the visitor's screen: projects (list), experience, skills, about (summary and education), contact, or activity (the agent trace monitor).",
+      "Open a window on the visitor's screen: projects (list), experience, skills, about (summary and education), contact, activity (the agent trace monitor), or jd-match (where the visitor can paste or upload a job description to get a fit report).",
     inputSchema: z.object({ windowId: z.enum(openableWindowIds) }),
     execute: async ({ windowId }) => shownToVisitor(windowId),
   }),

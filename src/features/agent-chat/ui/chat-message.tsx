@@ -19,7 +19,7 @@ type ChatMessageProps = {
 
 export function ChatMessage({ message, onUiAction }: ChatMessageProps) {
   const isUser = message.role === "user";
-  const isInstant = message.metadata?.source === "quick-action";
+  const source = message.metadata?.source;
   const text = messageText(message);
   const toolParts = message.parts.filter(isToolUIPart);
 
@@ -35,8 +35,11 @@ export function ChatMessage({ message, onUiAction }: ChatMessageProps) {
     >
       <span className="font-mono text-[11px] text-fg-muted">
         {isUser ? "you" : "assistant"}
-        {!isUser && isInstant && (
+        {!isUser && source === "quick-action" && (
           <span className="text-accent-text"> · instant, no model call</span>
+        )}
+        {!isUser && source === "jd-match" && (
+          <span className="text-accent-text"> · job match report</span>
         )}
       </span>
       {toolParts.length > 0 && (

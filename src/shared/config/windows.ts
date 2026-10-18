@@ -12,6 +12,7 @@ export const WINDOW_IDS = [
   "about",
   "contact",
   "activity",
+  "jd-match",
 ] as const;
 
 export type WindowId = (typeof WINDOW_IDS)[number];

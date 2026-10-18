@@ -1,9 +1,11 @@
 "use client";
 
 import { AgentChatPanel, appendLocalExchange } from "@/features/agent-chat";
+import { JdAttachButton } from "@/features/jd-match";
 import { QuickActionChips, type QuickAction } from "@/features/quick-actions";
 import { runUiAction } from "@/features/window-manager";
 import { useIsDesktop } from "@/shared/lib";
+import { matchJobDescription } from "../model/match-job-description";
 
 // The two features don't know about each other; this is where they meet.
 function handleQuickAction(quickAction: QuickAction) {
@@ -20,6 +22,7 @@ export function ChatWindow() {
       suggestions={<QuickActionChips onSelect={handleQuickAction} />}
       onUiAction={runUiAction}
       runToolsAutomatically={isDesktop}
+      composerAccessory={<JdAttachButton onMatch={matchJobDescription} />}
     />
   );
 }

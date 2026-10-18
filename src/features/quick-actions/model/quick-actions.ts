@@ -84,6 +84,14 @@ export const quickActions: readonly QuickAction[] = [
     action: { type: "openWindow", windowId: "activity" },
   },
   {
+    id: "jd-match",
+    label: "Match my JD",
+    question: "Can I check Binit against a job description?",
+    answer:
+      "Yes. Paste it or upload a PDF, DOCX or TXT in the Job Match window (the paperclip next to the chat input works too). You'll get an honest fit report: requirements his work backs up, with evidence, and the gaps. The text is never stored.",
+    action: { type: "openWindow", windowId: "jd-match" },
+  },
+  {
     id: "contact",
     label: "Contact",
     question: "How can I contact you?",

@@ -5,6 +5,7 @@ import { ActivityWindow } from "./activity-window";
 import { ChatWindow } from "./chat-window";
 import { ContactWindow } from "./contact-window";
 import { ExperienceWindow } from "./experience-window";
+import { JdMatchWindow } from "./jd-match-window";
 import { ProjectDetailWindow } from "./project-detail-window";
 import { ProjectsWindow } from "./projects-window";
 import { SkillsWindow } from "./skills-window";
@@ -23,6 +24,7 @@ export const windowBodies = {
   about: <AboutWindow />,
   contact: <ContactWindow />,
   activity: <ActivityWindow />,
+  "jd-match": <JdMatchWindow />,
 } satisfies Record<WindowId, ReactNode>;
 
 export type WindowBodies = Record<WindowId, ReactNode>;

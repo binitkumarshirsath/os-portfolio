@@ -6,8 +6,11 @@ import { useChatQuota } from "./chat-quota";
 import { runToolCall } from "./tool-action-bridge";
 
 export type AgentMessageMetadata = {
-  /** "quick-action" answers were written locally from content; no model was called. */
-  source: "quick-action" | "model";
+  /**
+   * "quick-action": written locally from content, no model call.
+   * "jd-match": a summary of a job-match report, whose full version is in its window.
+   */
+  source: "quick-action" | "jd-match" | "model";
 };
 
 export type AgentMessage = UIMessage<AgentMessageMetadata, never, AgentTools>;
@@ -45,11 +48,15 @@ function textMessage(
   };
 }
 
-/** Adds a question and a pre-written answer to the conversation without calling the API. */
-export function appendLocalExchange(question: string, answer: string): void {
+/** Adds a question and an already-known answer to the conversation without calling the chat API. */
+export function appendLocalExchange(
+  question: string,
+  answer: string,
+  source: Exclude<AgentMessageMetadata["source"], "model"> = "quick-action",
+): void {
   agentChat.messages = [
     ...agentChat.messages,
-    textMessage("user", question, "quick-action"),
-    textMessage("assistant", answer, "quick-action"),
+    textMessage("user", question, source),
+    textMessage("assistant", answer, source),
   ];
 }

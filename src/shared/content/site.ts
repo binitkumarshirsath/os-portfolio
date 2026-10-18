@@ -11,5 +11,6 @@ export const siteArchitecture = [
   "It uses tool calling: the model asks to open a window or show a project, and the browser runs that action — the trace chips in the chat show each call.",
   `Each turn is capped at ${AGENT_LIMITS.maxSteps} steps and ${AGENT_LIMITS.maxOutputTokens} output tokens, and the API route rate-limits per visitor and per day with Upstash Redis.`,
   "Quick actions like this one never call a model: they run the same UI actions locally and answer from the portfolio data, so they're instant and free.",
+  "Recruiters can share a job description (PDF, DOCX, TXT or pasted): the server extracts the text and one structured-output call returns a fit report with evidence for each match and honest gaps. The JD is never stored.",
   "The Activity Monitor shows each agent turn as a trace — model steps, tool calls, latency and tokens — a nod to Binit's observability work.",
 ] as const;

@@ -20,10 +20,12 @@
     "@upstash/redis": "^1.39.0",
     "ai": "^6.0.309",
     "lucide-react": "^1.59.0",
+    "mammoth": "^1.13.0",
     "motion": "^14.3.0",
     "next": "16.4.2",
     "react": "19.3.0",
     "react-dom": "19.3.0",
+    "unpdf": "^1.7.0",
     "zod": "^4.6.7",
     "zustand": "^5.0.15"
   },

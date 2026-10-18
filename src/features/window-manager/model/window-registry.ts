@@ -1,6 +1,7 @@
 import {
   Activity,
   BriefcaseBusiness,
+  FileSearch,
   FolderGit2,
   Layers,
   Mail,
@@ -96,6 +97,12 @@ export const windowRegistry: Record<WindowId, WindowDefinition> = {
     icon: Activity,
     inDock: true,
     frame: { top: 92, right: 24, width: 320, height: 420 },
+  },
+  "jd-match": {
+    title: "Job Match",
+    icon: FileSearch,
+    inDock: true,
+    frame: { top: 104, right: 24, width: 320, height: 600 },
   },
 };
 

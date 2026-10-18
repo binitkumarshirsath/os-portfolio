@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowUp } from "lucide-react";
-import { useState, type FormEvent } from "react";
+import { useState, type FormEvent, type ReactNode } from "react";
 import { AGENT_LIMITS } from "@/shared/config/ai";
 
 type ChatComposerProps = {
@@ -9,12 +9,19 @@ type ChatComposerProps = {
   canSend: boolean;
   placeholder: string;
   onSend: (text: string) => void;
+  /** Extra control before the input, e.g. the JD upload paperclip. */
+  accessory?: ReactNode;
 };
 
 /** Show the counter only when it matters, near the limit. */
 const COUNTER_FROM = AGENT_LIMITS.maxMessageChars - 100;
 
-export function ChatComposer({ canSend, placeholder, onSend }: ChatComposerProps) {
+export function ChatComposer({
+  canSend,
+  placeholder,
+  onSend,
+  accessory,
+}: ChatComposerProps) {
   const [text, setText] = useState("");
   const question = text.trim();
 
@@ -27,6 +34,7 @@ export function ChatComposer({ canSend, placeholder, onSend }: ChatComposerProps
 
   return (
     <form onSubmit={submit} className="flex items-center gap-2">
+      {accessory}
       <div className="relative min-w-0 flex-1">
         <input
           value={text}
