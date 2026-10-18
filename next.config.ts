@@ -6,6 +6,10 @@ const nextConfig: NextConfig = {
     agentFeedback: true,
   },
   cacheComponents: true,
+  images: {
+    // Project screenshots are hosted on Binit's Cloudinary account; nothing else is allowed.
+    remotePatterns: [new URL("https://res.cloudinary.com/dn4g4us6b/**")],
+  },
   partialPrefetching: true,
   turbopack: {
     rules: {
