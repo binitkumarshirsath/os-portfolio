@@ -98,3 +98,49 @@
     color: var(--color-fg);
   }
 }
+
+/*
+ * Boot screen: each line fades in on its own delay, then the whole screen fades
+ * out and stops catching clicks, all by ~1.1s. `.booted` (set before first paint
+ * on repeat visits, or by a key/click) removes it at once.
+ */
+@keyframes boot-line-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+@keyframes boot-out {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+.boot-screen {
+  animation: boot-out 0.25s ease-in 0.85s forwards;
+}
+
+.boot-line {
+  animation: boot-line-in 0.18s ease-out backwards;
+}
+
+.booted .boot-screen {
+  display: none;
+}
+
+/* Reduced motion: no boot screen, and no CSS animation or transition anywhere. */
+@media (prefers-reduced-motion: reduce) {
+  .boot-screen {
+    display: none;
+  }
+
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

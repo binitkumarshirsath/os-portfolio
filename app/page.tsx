@@ -1,4 +1,5 @@
 import { ViewportSwitch } from "@/shared/ui";
+import { BootScreen } from "@/widgets/boot-screen";
 import { Desktop } from "@/widgets/desktop";
 import { Dock } from "@/widgets/dock";
 import { Menubar } from "@/widgets/menubar";
@@ -9,15 +10,18 @@ import { windowBodies } from "@/widgets/windows";
 // handed to whichever shell fits the screen, so no widget has to import another.
 export default function Home() {
   return (
-    <ViewportSwitch
-      desktop={
-        <div className="flex h-dvh flex-col">
-          <Menubar />
-          <Desktop bodies={windowBodies} />
-          <Dock />
-        </div>
-      }
-      mobile={<MobileShell bodies={windowBodies} />}
-    />
+    <>
+      <BootScreen />
+      <ViewportSwitch
+        desktop={
+          <div className="flex h-dvh flex-col">
+            <Menubar />
+            <Desktop bodies={windowBodies} />
+            <Dock />
+          </div>
+        }
+        mobile={<MobileShell bodies={windowBodies} />}
+      />
+    </>
   );
 }

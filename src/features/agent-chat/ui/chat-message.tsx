@@ -1,5 +1,5 @@
 import { isToolUIPart } from "ai";
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import type { UiAction } from "@/shared/config/ui-actions";
 import type { AgentMessage } from "../model/agent-chat";
 import { MessageText } from "./message-text";
@@ -64,6 +64,8 @@ export function ChatMessage({ message, onUiAction }: ChatMessageProps) {
 
 /** Shown between sending and the first streamed token. */
 export function ThinkingIndicator() {
+  // MotionConfig's reduced-motion mode stops movement, not opacity loops; stop this one too.
+  const reduceMotion = useReducedMotion();
   return (
     <div className="space-y-1" aria-label="Assistant is thinking" role="status">
       <p className="font-mono text-[11px] text-fg-muted">assistant · thinking</p>
@@ -73,7 +75,7 @@ export function ThinkingIndicator() {
             key={dot}
             aria-hidden
             className="size-1.5 rounded-full bg-accent"
-            animate={{ opacity: [0.25, 1, 0.25] }}
+            animate={reduceMotion ? { opacity: 0.6 } : { opacity: [0.25, 1, 0.25] }}
             transition={{ duration: 1, repeat: Infinity, delay: dot * 0.15 }}
           />
         ))}
