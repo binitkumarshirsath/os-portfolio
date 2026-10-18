@@ -36,7 +36,7 @@ export function Desktop({ bodies }: DesktopProps) {
 
       {/* Click-through layer: only the windows themselves catch the pointer. */}
       <div ref={boundsRef} className="pointer-events-none absolute inset-0">
-        <AnimatePresence custom={minimizedIds}>
+        <AnimatePresence>
           {visibleIds.map((id) => (
             <WindowFrame key={id} id={id} boundsRef={boundsRef}>
               {bodies[id]}

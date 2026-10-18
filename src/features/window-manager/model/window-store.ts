@@ -15,6 +15,8 @@ type WindowStore = {
   minimizedIds: WindowId[];
   /** Filling the whole desktop instead of their default frame. */
   maximizedIds: WindowId[];
+  /** A window coming back from the dock, so it can animate out of its dock icon. */
+  restoringId: WindowId | null;
   focusedId: WindowId | null;
   /** Set when a window is opened on purpose, so it takes keyboard focus once. */
   focusRequestId: WindowId | null;
@@ -31,6 +33,7 @@ type WindowStore = {
   moveWindow: (id: WindowId, offset: WindowOffset) => void;
   showProject: (slug: ProjectSlug) => void;
   clearFocusRequest: () => void;
+  clearRestoring: () => void;
 };
 
 const without = (ids: WindowId[], id: WindowId) => ids.filter((other) => other !== id);
@@ -49,6 +52,7 @@ export const useWindowStore = create<WindowStore>()((set) => ({
   stack: ["projects", "chat"],
   minimizedIds: [],
   maximizedIds: [],
+  restoringId: null,
   focusedId: "chat",
   focusRequestId: null,
   offsets: {},
@@ -59,6 +63,7 @@ export const useWindowStore = create<WindowStore>()((set) => ({
     set((state) => ({
       stack: bringToTop(state.stack, id),
       minimizedIds: without(state.minimizedIds, id),
+      restoringId: state.minimizedIds.includes(id) ? id : state.restoringId,
       focusedId: id,
       focusRequestId: id,
     })),
@@ -105,9 +110,13 @@ export const useWindowStore = create<WindowStore>()((set) => ({
       activeProjectSlug: slug,
       stack: bringToTop(state.stack, "project-detail"),
       minimizedIds: without(state.minimizedIds, "project-detail"),
+      restoringId: state.minimizedIds.includes("project-detail")
+        ? "project-detail"
+        : state.restoringId,
       focusedId: "project-detail",
       focusRequestId: "project-detail",
     })),
 
   clearFocusRequest: () => set({ focusRequestId: null }),
+  clearRestoring: () => set({ restoringId: null }),
 }));

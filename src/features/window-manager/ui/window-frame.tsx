@@ -1,10 +1,11 @@
 "use client";
 
-import { motion, useDragControls, useMotionValue } from "motion/react";
+import { motion, useDragControls } from "motion/react";
 import { useEffect, useRef, type ReactNode, type RefObject } from "react";
 import { windowRegistry, type WindowId } from "../model/window-registry";
 import { useWindowStore } from "../model/window-store";
 import { TitleBar } from "./title-bar";
+import { resizeTransition, useWindowMotion } from "./use-window-motion";
 
 type WindowFrameProps = {
   id: WindowId;
@@ -19,20 +20,17 @@ export function WindowFrame({ id, boundsRef, children }: WindowFrameProps) {
   const { title, frame } = windowRegistry[id];
   const stackIndex = useWindowStore((state) => state.stack.indexOf(id));
   const isFocused = useWindowStore((state) => state.focusedId === id);
-  const isMaximized = useWindowStore((state) => state.maximizedIds.includes(id));
   const hasFocusRequest = useWindowStore((state) => state.focusRequestId === id);
-  const savedOffset = useWindowStore((state) => state.offsets[id]);
   const focusWindow = useWindowStore((state) => state.focusWindow);
   const closeWindow = useWindowStore((state) => state.closeWindow);
-  const minimizeWindow = useWindowStore((state) => state.minimizeWindow);
   const toggleMaximize = useWindowStore((state) => state.toggleMaximize);
   const moveWindow = useWindowStore((state) => state.moveWindow);
   const clearFocusRequest = useWindowStore((state) => state.clearFocusRequest);
 
   const dragControls = useDragControls();
-  const x = useMotionValue(savedOffset?.x ?? 0);
-  const y = useMotionValue(savedOffset?.y ?? 0);
   const frameRef = useRef<HTMLDivElement>(null);
+  const motionValues = useWindowMotion(id, frameRef);
+  const { x, y, dockX, dockY, scale, opacity, isMaximized } = motionValues;
   // Whatever opened this window (a dock button, a project card) gets focus back on close.
   const returnFocusRef = useRef<HTMLElement | null>(null);
   const titleId = `window-title-${id}`;
@@ -57,18 +55,16 @@ export function WindowFrame({ id, boundsRef, children }: WindowFrameProps) {
     if (target?.isConnected) target.focus();
   }
 
-  function minimize() {
-    minimizeWindow(id);
+  async function minimize() {
+    await motionValues.minimize();
     // The window now lives in the dock, so that's where focus goes.
     dockButton()?.focus();
   }
 
-  // Maximized windows ignore their frame and drag offset; the offset is kept for restore.
+  // Maximized windows fill the desktop; the drag offset is kept in the store for restore.
   const placement = isMaximized
-    ? { x: 0, y: 0, inset: MAXIMIZED_INSET }
+    ? { inset: MAXIMIZED_INSET }
     : {
-        x,
-        y,
         top: frame.top,
         right: frame.right,
         width: frame.width,
@@ -96,36 +92,39 @@ export function WindowFrame({ id, boundsRef, children }: WindowFrameProps) {
         event.stopPropagation();
         close();
       }}
-      initial={{ opacity: 0, scale: 0.96 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit="exit"
-      // AnimatePresence passes the minimized ids as `custom`: a window that's leaving
-      // can't re-render to learn *why* it left. Minimizing drops it toward the dock.
-      variants={{
-        exit: (minimizedIds: WindowId[] = []) =>
-          minimizedIds.includes(id)
-            ? { opacity: 0, scale: 0.9, y: 120 }
-            : { opacity: 0, scale: 0.96 },
-      }}
-      transition={{ duration: 0.18, ease: "easeOut" }}
-      style={{ ...placement, zIndex: 10 + stackIndex }}
-      className={`pointer-events-auto absolute flex flex-col overflow-hidden rounded-md border bg-surface shadow-[0_24px_60px_-24px_rgb(0_0_0/0.9)] outline-none ${
-        isFocused ? "border-accent-deep" : "border-line"
-      }`}
+      // `layout` animates the box between its frame and the full desktop; the
+      // dependency stops it from running on any other re-render.
+      layout
+      layoutDependency={isMaximized}
+      transition={{ layout: resizeTransition }}
+      style={{ ...placement, x, y, borderRadius: 6, zIndex: 10 + stackIndex }}
+      className="pointer-events-auto absolute outline-none"
     >
-      <TitleBar
-        titleId={titleId}
-        title={title}
-        isFocused={isFocused}
-        isMaximized={isMaximized}
-        onClose={close}
-        onMinimize={minimize}
-        onToggleMaximize={() => toggleMaximize(id)}
-        onDragStart={(event) => {
-          if (!isMaximized) dragControls.start(event);
-        }}
-      />
-      <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
+      {/* Two layers on purpose: the outer one owns position and size (drag, layout),
+          this inner one owns scale and fade (dock, open, close). Putting a scale on
+          the same element as `layout` makes Motion's size correction fight it. */}
+      <motion.div
+        exit={{ opacity: 0, scale: 0.96 }}
+        transition={{ duration: 0.18, ease: "easeOut" }}
+        style={{ x: dockX, y: dockY, scale, opacity }}
+        className={`flex size-full flex-col overflow-hidden rounded-md border bg-surface shadow-[0_24px_60px_-24px_rgb(0_0_0/0.9)] ${
+          isFocused ? "border-accent-deep" : "border-line"
+        }`}
+      >
+        <TitleBar
+          titleId={titleId}
+          title={title}
+          isFocused={isFocused}
+          isMaximized={isMaximized}
+          onClose={close}
+          onMinimize={minimize}
+          onToggleMaximize={() => toggleMaximize(id)}
+          onDragStart={(event) => {
+            if (!isMaximized) dragControls.start(event);
+          }}
+        />
+        <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
+      </motion.div>
     </motion.div>
   );
 }
