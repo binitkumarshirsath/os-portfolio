@@ -1,7 +1,7 @@
 "use client";
 
 import { animate, useMotionValue, useReducedMotion, type Transition } from "motion/react";
-import { useEffect, useLayoutEffect, useRef, type RefObject } from "react";
+import { useLayoutEffect, useRef, type RefObject } from "react";
 import type { WindowId } from "../model/window-registry";
 import { useWindowStore } from "../model/window-store";
 
@@ -12,7 +12,6 @@ const DOCKED_SCALE = 0.08;
 const intoDock: Transition = { duration: 0.32, ease: [0.55, 0, 0.75, 0] };
 const outOfDock: Transition = { duration: 0.34, ease: [0.16, 1, 0.3, 1] };
 const popIn: Transition = { duration: 0.18, ease: "easeOut" };
-export const resizeTransition: Transition = { duration: 0.28, ease: [0.32, 0.72, 0, 1] };
 
 /** Distance from the window's centre to its dock icon's centre, in px. */
 function offsetToDock(id: WindowId, frame: HTMLElement | null) {
@@ -28,12 +27,12 @@ function offsetToDock(id: WindowId, frame: HTMLElement | null) {
 
 /**
  * The motion values behind a window and the animations that drive them.
- * x/y: the outer layer's drag offset (drag writes them; maximize animates them).
+ * x/y: the outer layer's drag offset (drag writes them; maximize animates them,
+ * see use-window-maximize).
  * dockX/dockY/scale/opacity: the inner layer, for opening and the dock.
  */
 export function useWindowMotion(id: WindowId, frameRef: RefObject<HTMLElement | null>) {
   const savedOffset = useWindowStore((state) => state.offsets[id]);
-  const isMaximized = useWindowStore((state) => state.maximizedIds.includes(id));
   const isRestoring = useWindowStore((state) => state.restoringId === id);
   // Only windows opened by an action have a focus request; ones open on page load don't.
   const isOpening = useWindowStore((state) => state.focusRequestId === id);
@@ -41,12 +40,10 @@ export function useWindowMotion(id: WindowId, frameRef: RefObject<HTMLElement | 
   const minimizeWindow = useWindowStore((state) => state.minimizeWindow);
   const reduceMotion = useReducedMotion();
 
-  // Where the window rests: its drag offset, or the corner when maximized.
-  const rest = isMaximized ? { x: 0, y: 0 } : (savedOffset ?? { x: 0, y: 0 });
-  const x = useMotionValue(rest.x);
-  const y = useMotionValue(rest.y);
+  const x = useMotionValue(savedOffset?.x ?? 0);
+  const y = useMotionValue(savedOffset?.y ?? 0);
   // The dock animation moves the visible inner layer only, never the positioned outer
-  // one, so it can't disturb dragging or the maximize layout animation.
+  // one, so it can't disturb dragging or maximizing.
   const dockX = useMotionValue(0);
   const dockY = useMotionValue(0);
   const scale = useMotionValue(1);
@@ -92,19 +89,6 @@ export function useWindowMotion(id: WindowId, frameRef: RefObject<HTMLElement | 
     opacity,
   ]);
 
-  // Maximize/restore: the box itself is animated by `layout`; this slides the drag
-  // offset to zero (or back) at the same pace so the two motions line up.
-  const isFirstRender = useRef(true);
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-    const transition = reduceMotion ? { duration: 0 } : resizeTransition;
-    animate(x, rest.x, transition);
-    animate(y, rest.y, transition);
-  }, [isMaximized, reduceMotion, x, y, rest.x, rest.y]);
-
   async function minimize() {
     const offset = offsetToDock(id, frameRef.current);
     if (offset && !reduceMotion) {
@@ -118,5 +102,5 @@ export function useWindowMotion(id: WindowId, frameRef: RefObject<HTMLElement | 
     minimizeWindow(id);
   }
 
-  return { x, y, dockX, dockY, scale, opacity, isMaximized, minimize };
+  return { x, y, dockX, dockY, scale, opacity, minimize };
 }

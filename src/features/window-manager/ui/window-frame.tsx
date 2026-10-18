@@ -1,11 +1,19 @@
 "use client";
 
 import { motion, useDragControls } from "motion/react";
-import { useEffect, useRef, type ReactNode, type RefObject } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+  type PointerEvent,
+  type RefObject,
+} from "react";
 import { windowRegistry, type WindowId } from "../model/window-registry";
 import { useWindowStore } from "../model/window-store";
 import { TitleBar } from "./title-bar";
-import { resizeTransition, useWindowMotion } from "./use-window-motion";
+import { useWindowMaximize } from "./use-window-maximize";
+import { useWindowMotion } from "./use-window-motion";
 
 type WindowFrameProps = {
   id: WindowId;
@@ -14,8 +22,6 @@ type WindowFrameProps = {
   children: ReactNode;
 };
 
-const MAXIMIZED_INSET = 12;
-
 export function WindowFrame({ id, boundsRef, children }: WindowFrameProps) {
   const { title, frame } = windowRegistry[id];
   const stackIndex = useWindowStore((state) => state.stack.indexOf(id));
@@ -23,16 +29,28 @@ export function WindowFrame({ id, boundsRef, children }: WindowFrameProps) {
   const hasFocusRequest = useWindowStore((state) => state.focusRequestId === id);
   const focusWindow = useWindowStore((state) => state.focusWindow);
   const closeWindow = useWindowStore((state) => state.closeWindow);
-  const toggleMaximize = useWindowStore((state) => state.toggleMaximize);
   const moveWindow = useWindowStore((state) => state.moveWindow);
   const clearFocusRequest = useWindowStore((state) => state.clearFocusRequest);
 
   const dragControls = useDragControls();
   const frameRef = useRef<HTMLDivElement>(null);
   const motionValues = useWindowMotion(id, frameRef);
-  const { x, y, dockX, dockY, scale, opacity, isMaximized } = motionValues;
+  const { x, y, dockX, dockY, scale, opacity } = motionValues;
+  const { width, height, isMaximized, toggleMaximize } = useWindowMaximize({
+    id,
+    frame,
+    frameRef,
+    boundsRef,
+    x,
+    y,
+  });
   // Whatever opened this window (a dock button, a project card) gets focus back on close.
   const returnFocusRef = useRef<HTMLElement | null>(null);
+  // Drag limits as plain numbers, measured when a drag begins. Not a ref to the desktop:
+  // with a ref, Motion watches this window's size and repositions it whenever it
+  // changes, which cancels the maximize/restore animation halfway. Motion reads these
+  // once the pointer has moved past its drag threshold, after this state has rendered.
+  const [dragBounds, setDragBounds] = useState({ left: 0, right: 0, top: 0, bottom: 0 });
   const titleId = `window-title-${id}`;
 
   useEffect(() => {
@@ -55,22 +73,27 @@ export function WindowFrame({ id, boundsRef, children }: WindowFrameProps) {
     if (target?.isConnected) target.focus();
   }
 
+  function startDrag(event: PointerEvent) {
+    if (isMaximized) return;
+    const window = frameRef.current?.getBoundingClientRect();
+    const area = boundsRef.current?.getBoundingClientRect();
+    if (window && area) {
+      // How far x/y may travel before an edge leaves the desktop area.
+      setDragBounds({
+        left: x.get() - (window.left - area.left),
+        right: x.get() + (area.right - window.right),
+        top: y.get() - (window.top - area.top),
+        bottom: y.get() + (area.bottom - window.bottom),
+      });
+    }
+    dragControls.start(event);
+  }
+
   async function minimize() {
     await motionValues.minimize();
     // The window now lives in the dock, so that's where focus goes.
     dockButton()?.focus();
   }
-
-  // Maximized windows fill the desktop; the drag offset is kept in the store for restore.
-  const placement = isMaximized
-    ? { inset: MAXIMIZED_INSET }
-    : {
-        top: frame.top,
-        right: frame.right,
-        width: frame.width,
-        height: frame.height,
-        maxHeight: `calc(100% - ${frame.top + 16}px)`,
-      };
 
   return (
     <motion.div
@@ -81,7 +104,7 @@ export function WindowFrame({ id, boundsRef, children }: WindowFrameProps) {
       drag={!isMaximized}
       dragListener={false}
       dragControls={dragControls}
-      dragConstraints={boundsRef}
+      dragConstraints={dragBounds}
       dragMomentum={false}
       dragElastic={0}
       onDragEnd={() => moveWindow(id, { x: x.get(), y: y.get() })}
@@ -92,17 +115,22 @@ export function WindowFrame({ id, boundsRef, children }: WindowFrameProps) {
         event.stopPropagation();
         close();
       }}
-      // `layout` animates the box between its frame and the full desktop; the
-      // dependency stops it from running on any other re-render.
-      layout
-      layoutDependency={isMaximized}
-      transition={{ layout: resizeTransition }}
-      style={{ ...placement, x, y, borderRadius: 6, zIndex: 10 + stackIndex }}
+      style={{
+        top: frame.top,
+        right: frame.right,
+        width,
+        height,
+        // The frame height gives way on short screens; a maximized window sizes itself.
+        maxHeight: isMaximized ? "none" : `calc(100% - ${frame.top + 16}px)`,
+        x,
+        y,
+        zIndex: 10 + stackIndex,
+      }}
       className="pointer-events-auto absolute outline-none"
     >
-      {/* Two layers on purpose: the outer one owns position and size (drag, layout),
-          this inner one owns scale and fade (dock, open, close). Putting a scale on
-          the same element as `layout` makes Motion's size correction fight it. */}
+      {/* Two layers on purpose: the outer one owns position and size (drag, maximize),
+          this inner one owns scale and fade (dock, open, close), so the two kinds
+          of animation never touch the same element. */}
       <motion.div
         exit={{ opacity: 0, scale: 0.96 }}
         transition={{ duration: 0.18, ease: "easeOut" }}
@@ -118,10 +146,8 @@ export function WindowFrame({ id, boundsRef, children }: WindowFrameProps) {
           isMaximized={isMaximized}
           onClose={close}
           onMinimize={minimize}
-          onToggleMaximize={() => toggleMaximize(id)}
-          onDragStart={(event) => {
-            if (!isMaximized) dragControls.start(event);
-          }}
+          onToggleMaximize={toggleMaximize}
+          onDragStart={startDrag}
         />
         <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
       </motion.div>
