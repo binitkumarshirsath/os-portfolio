@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { RATE_LIMITS } from "@/shared/config/rate-limits";
 import { loadQuotaOnce, useChatQuota } from "../model/chat-quota";
 
-const LIMIT = RATE_LIMITS.perVisitor.requests;
+const LIMIT = RATE_LIMITS.chat.requests;
 const SEGMENTS = Array.from({ length: LIMIT }, (_, index) => index);
 
 /**

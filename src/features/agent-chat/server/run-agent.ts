@@ -4,7 +4,7 @@ import { AGENT_LIMITS } from "@/shared/config/ai";
 import type { AgentMessage } from "../model/agent-chat";
 import { agentTools } from "../model/agent-tools";
 import { systemPrompt } from "../model/system-prompt";
-import { agentModel, agentProviderOptions } from "./agent-model";
+import { fallbackModel, modelProviderOptions } from "@/shared/api/server";
 import type { ChatRequestMessage } from "./request-schema";
 
 /**
@@ -35,13 +35,13 @@ export async function runAgent({ messages, headers, abortSignal }: RunAgentOptio
   });
 
   const result = streamText({
-    model: agentModel,
+    model: fallbackModel,
     system: systemPrompt,
     messages: await convertToModelMessages(uiMessages, { tools: agentTools }),
     tools: agentTools,
     maxOutputTokens: AGENT_LIMITS.maxOutputTokens,
     stopWhen: stepCountIs(AGENT_LIMITS.maxSteps),
-    providerOptions: agentProviderOptions,
+    providerOptions: modelProviderOptions,
     // Retries would hit Groq again; the model wrapper already falls back to Gemini instead.
     maxRetries: 0,
     // Stop paying for tokens as soon as the visitor goes away.

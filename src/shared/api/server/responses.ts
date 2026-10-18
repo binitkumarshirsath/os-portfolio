@@ -1,11 +1,15 @@
 import "server-only";
-import { RATE_LIMIT_HEADERS, type ChatErrorCode } from "@/shared/config/rate-limits";
+import {
+  RATE_LIMIT_HEADERS,
+  type ApiErrorCode,
+  type RateLimitBucket,
+} from "@/shared/config/rate-limits";
 import type { RateLimitOutcome } from "./rate-limit";
 
-/** Errors are JSON with a stable code; the chat maps codes to friendly UI states. */
-export function chatError(
+/** Errors are JSON with a stable code; the UI maps codes to friendly states. */
+export function apiError(
   status: number,
-  code: ChatErrorCode,
+  code: ApiErrorCode,
   message: string,
   headers?: HeadersInit,
 ): Response {
@@ -19,9 +23,18 @@ export function rateLimitHeaders(outcome: RateLimitOutcome): Record<string, stri
   };
 }
 
+// No exact minutes: in a sliding window, Upstash's reset marks the end of its
+// internal bucket, not the moment the next request is actually allowed.
+const visitorLimitMessages: Record<RateLimitBucket, string> = {
+  chat: "That's the hourly limit for questions. It frees up again within the hour. The quick actions and every window still work.",
+  jdMatch:
+    "That's the hourly limit for job matches. It frees up again within the hour. Binit's experience and skills windows show the same evidence in the meantime.",
+};
+
 /** The 429 for a refused request, worded for a recruiter, not a developer. */
 export function rateLimitedResponse(
   outcome: Extract<RateLimitOutcome, { allowed: false }>,
+  bucket: RateLimitBucket,
 ): Response {
   const retryAfterSeconds = Math.max(1, Math.ceil((outcome.reset - Date.now()) / 1000));
   const headers = {
@@ -30,17 +43,10 @@ export function rateLimitedResponse(
   };
 
   if (outcome.reason === "visitor") {
-    // No exact minutes: in a sliding window, Upstash's reset marks the end of its
-    // internal bucket, not the moment the next question is actually allowed.
-    return chatError(
-      429,
-      "visitor_limit",
-      "That's the hourly limit for questions. It frees up again within the hour. The quick actions and every window still work.",
-      headers,
-    );
+    return apiError(429, "visitor_limit", visitorLimitMessages[bucket], headers);
   }
   // Daily cap, or limits unavailable: either way the agent rests for now.
-  return chatError(
+  return apiError(
     429,
     "daily_limit",
     "I'm out of breath for today. Here's how to reach Binit directly.",

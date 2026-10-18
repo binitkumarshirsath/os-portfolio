@@ -1,25 +1,6 @@
-import type { ChatErrorCode } from "@/shared/config/rate-limits";
+import { NETWORK_ERROR, readApiError, type ApiErrorState } from "@/shared/lib";
 
-export type ChatErrorState = {
-  /** "network": the request never got a proper answer from our API at all. */
-  code: ChatErrorCode | "network";
-  message: string;
-};
-
-type ErrorBody = { error: { code: ChatErrorCode; message: string } };
-
-function isErrorBody(value: unknown): value is ErrorBody {
-  if (typeof value !== "object" || value === null || !("error" in value)) return false;
-  const { error } = value;
-  return (
-    typeof error === "object" &&
-    error !== null &&
-    "code" in error &&
-    typeof error.code === "string" &&
-    "message" in error &&
-    typeof error.message === "string"
-  );
-}
+export type ChatErrorState = ApiErrorState;
 
 /**
  * The API reports failures as { error: { code, message } } both as HTTP error
@@ -29,13 +10,8 @@ function isErrorBody(value: unknown): value is ErrorBody {
 export function describeChatError(error: Error | undefined): ChatErrorState | null {
   if (!error) return null;
   try {
-    const body: unknown = JSON.parse(error.message);
-    if (isErrorBody(body)) return body.error;
+    return readApiError(JSON.parse(error.message)) ?? NETWORK_ERROR;
   } catch {
-    // Not our JSON: a dropped connection or similar.
+    return NETWORK_ERROR; // not our JSON: a dropped connection or similar
   }
-  return {
-    code: "network",
-    message: "The connection dropped before the answer arrived. Try again in a moment.",
-  };
 }

@@ -10,6 +10,7 @@ export { experience } from "./experience";
 export { skills } from "./skills";
 export { education } from "./education";
 export { siteArchitecture } from "./site";
+export { profileAsText, bulletList } from "./profile-as-text";
 export type {
   Profile,
   Project,
