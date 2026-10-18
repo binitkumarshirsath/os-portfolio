@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
 import type { AgentMessage } from "../model/agent-chat";
+import { MessageText } from "./message-text";
 
 function messageText(message: AgentMessage): string {
   return message.parts
@@ -11,6 +12,10 @@ function messageText(message: AgentMessage): string {
 export function ChatMessage({ message }: { message: AgentMessage }) {
   const isUser = message.role === "user";
   const isInstant = message.metadata?.source === "quick-action";
+  const text = messageText(message);
+
+  // A streaming answer has no text until its first token; the thinking dots cover that gap.
+  if (!text) return null;
 
   return (
     <motion.li
@@ -30,8 +35,28 @@ export function ChatMessage({ message }: { message: AgentMessage }) {
           isUser ? "border-accent-deep bg-accent-tint" : "border-line bg-raised"
         }`}
       >
-        {messageText(message)}
+        <MessageText text={text} />
       </p>
     </motion.li>
+  );
+}
+
+/** Shown between sending and the first streamed token. */
+export function ThinkingIndicator() {
+  return (
+    <div className="space-y-1" aria-label="Assistant is thinking" role="status">
+      <p className="font-mono text-[11px] text-fg-muted">assistant · thinking</p>
+      <div className="flex w-fit gap-1 rounded-sm border border-line bg-raised px-3 py-3.5">
+        {[0, 1, 2].map((dot) => (
+          <motion.span
+            key={dot}
+            aria-hidden
+            className="size-1.5 rounded-full bg-accent"
+            animate={{ opacity: [0.25, 1, 0.25] }}
+            transition={{ duration: 1, repeat: Infinity, delay: dot * 0.15 }}
+          />
+        ))}
+      </div>
+    </div>
   );
 }

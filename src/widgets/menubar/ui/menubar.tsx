@@ -1,5 +1,6 @@
 "use client";
 
+import { useAgentStatus, type AgentStatus } from "@/features/agent-chat";
 import { useWindowStore, type WindowId } from "@/features/window-manager";
 import { Clock } from "./clock";
 
@@ -9,8 +10,15 @@ const menuItems: { label: string; windowId: WindowId }[] = [
   { label: "Ask", windowId: "chat" },
 ];
 
+const statusDot: Record<AgentStatus, string> = {
+  ready: "bg-accent",
+  thinking: "bg-accent-text animate-pulse",
+  resting: "bg-line-strong",
+};
+
 export function Menubar() {
   const openWindow = useWindowStore((state) => state.openWindow);
+  const agentStatus = useAgentStatus();
 
   return (
     <header className="relative z-50 flex h-8 shrink-0 items-center justify-between border-b border-line bg-background px-4 font-mono text-xs">
@@ -33,10 +41,12 @@ export function Menubar() {
         </nav>
       </div>
       <div className="flex items-center gap-5">
-        {/* Static for now; Phase 6 ties this to whether the agent is reachable. */}
         <span className="flex items-center gap-2 text-fg-muted">
-          <span aria-hidden className="size-1.5 rounded-full bg-accent" />
-          agent ready
+          <span
+            aria-hidden
+            className={`size-1.5 rounded-full ${statusDot[agentStatus]}`}
+          />
+          agent {agentStatus}
         </span>
         <Clock />
       </div>

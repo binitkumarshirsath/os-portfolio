@@ -2,9 +2,10 @@
  * agent-chat — the "Ask Binit" conversation.
  * Owns the single module-level Chat (so history survives unmounts), renders it,
  * and lets other code append local question/answer pairs without calling the API.
- * Streaming from /api/chat and tool calls arrive in Phases 6–7.
+ * Streams answers from /api/chat; server-side code lives behind ./server.
  */
 export { AgentChatPanel } from "./ui/agent-chat-panel";
+export { useAgentStatus, type AgentStatus } from "./model/use-agent-status";
 export {
   agentChat,
   appendLocalExchange,

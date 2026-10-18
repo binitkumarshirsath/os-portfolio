@@ -4,21 +4,37 @@ import { useChat } from "@ai-sdk/react";
 import { useEffect, useRef, type ReactNode } from "react";
 import { profile } from "@/shared/content";
 import { agentChat } from "../model/agent-chat";
-import { ChatMessage } from "./chat-message";
+import { describeChatError } from "../model/chat-error";
+import { useChatQuota } from "../model/chat-quota";
+import { ChatComposer } from "./chat-composer";
+import { ChatErrorNotice } from "./chat-error-notice";
+import { ChatMessage, ThinkingIndicator } from "./chat-message";
+import { QuotaMeter } from "./quota-meter";
 
 type AgentChatPanelProps = {
   /** Suggestion chips, supplied by whoever composes the chat (the quick-actions feature). */
   suggestions: ReactNode;
+  /** Shown as the way out when the agent can't answer. */
+  onShowContact: () => void;
 };
 
-export function AgentChatPanel({ suggestions }: AgentChatPanelProps) {
-  const { messages } = useChat({ chat: agentChat });
+export function AgentChatPanel({ suggestions, onShowContact }: AgentChatPanelProps) {
+  const { messages, sendMessage, regenerate, status, error } = useChat({
+    chat: agentChat,
+  });
+  const remaining = useChatQuota((state) => state.remaining);
   const endRef = useRef<HTMLDivElement>(null);
+
+  const isBusy = status === "submitted" || status === "streaming";
+  const isOutOfQuota = remaining === 0;
+  const chatError = describeChatError(error);
   const hasMessages = messages.length > 0;
+  // Changes on every streamed token, so the view follows a growing answer.
+  const lastMessageSize = JSON.stringify(messages.at(-1)?.parts ?? []).length;
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ block: "end" });
-  }, [messages.length]);
+  }, [messages.length, lastMessageSize, status]);
 
   return (
     <div className="flex h-full flex-col">
@@ -32,11 +48,25 @@ export function AgentChatPanel({ suggestions }: AgentChatPanelProps) {
         </div>
         {/* Before the first exchange the chips sit right under the greeting. */}
         {!hasMessages && suggestions}
-        <ul aria-live="polite" aria-label="Conversation" className="space-y-4">
+        {/* aria-busy holds announcements until a streamed answer is complete. */}
+        <ul
+          aria-live="polite"
+          aria-busy={isBusy}
+          aria-label="Conversation"
+          className="space-y-4"
+        >
           {messages.map((message) => (
             <ChatMessage key={message.id} message={message} />
           ))}
         </ul>
+        {status === "submitted" && <ThinkingIndicator />}
+        {chatError && (
+          <ChatErrorNotice
+            error={chatError}
+            onShowContact={onShowContact}
+            onRetry={() => regenerate()}
+          />
+        )}
         <div ref={endRef} />
       </div>
 
@@ -47,14 +77,17 @@ export function AgentChatPanel({ suggestions }: AgentChatPanelProps) {
         </div>
       )}
 
-      <div className="border-t border-line p-3">
-        {/* Free-typed questions go live with the API route in Phase 6. */}
-        <input
-          disabled
-          aria-label="Message"
-          placeholder="Typing opens up soon — try a chip above"
-          className="h-10 w-full rounded-sm border border-line bg-background px-3 text-sm placeholder:text-fg-muted disabled:cursor-not-allowed"
+      <div className="space-y-2 border-t border-line p-3">
+        <ChatComposer
+          canSend={!isBusy && !isOutOfQuota}
+          placeholder={
+            isOutOfQuota
+              ? "Hourly limit reached; the chips still work"
+              : "Ask about his work…"
+          }
+          onSend={(text) => sendMessage({ text })}
         />
+        <QuotaMeter />
       </div>
     </div>
   );

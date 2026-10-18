@@ -67,3 +67,18 @@ export async function checkRateLimit(visitorId: string): Promise<RateLimitOutcom
     return { allowed: false, reason: "unavailable", reset: Date.now() };
   }
 }
+
+/**
+ * How many questions this visitor has left, without using one up. Lets the chat
+ * show an accurate meter on page load, before the first question is sent.
+ */
+export async function getRemainingQuota(visitorId: string): Promise<number> {
+  if (!limiters) return isProduction ? 0 : RATE_LIMITS.perVisitor.requests;
+  try {
+    const { remaining } = await limiters.perVisitor.getRemaining(visitorId);
+    return remaining;
+  } catch (error) {
+    console.error("[rate-limit] Upstash request failed", error);
+    return 0;
+  }
+}

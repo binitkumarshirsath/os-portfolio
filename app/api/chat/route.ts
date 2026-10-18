@@ -1,10 +1,12 @@
+import { RATE_LIMITS } from "@/shared/config/rate-limits";
 import {
   chatError,
   checkRateLimit,
+  getRemainingQuota,
   parseChatRequest,
   rateLimitedResponse,
   rateLimitHeaders,
-  stubReply,
+  runAgent,
   visitorIdFrom,
 } from "@/features/agent-chat/server";
 
@@ -14,7 +16,7 @@ export const maxDuration = 30;
 /**
  * The only door to the model. Cheapest checks run first, so abuse is turned
  * away before it costs anything: validate (free) → rate limit (one Redis call)
- * → model (Phase 6).
+ * → model.
  */
 export async function POST(request: Request) {
   // TODO(turnstile): verify a Cloudflare Turnstile token here, before anything else,
@@ -26,5 +28,18 @@ export async function POST(request: Request) {
   const outcome = await checkRateLimit(visitorIdFrom(request.headers));
   if (!outcome.allowed) return rateLimitedResponse(outcome);
 
-  return stubReply(rateLimitHeaders(outcome));
+  return runAgent({
+    messages: parsed.messages,
+    headers: rateLimitHeaders(outcome),
+    abortSignal: request.signal,
+  });
+}
+
+/** The visitor's remaining quota, for the chat meter. Doesn't count as a question. */
+export async function GET(request: Request) {
+  const remaining = await getRemainingQuota(visitorIdFrom(request.headers));
+  return Response.json(
+    { remaining, limit: RATE_LIMITS.perVisitor.requests },
+    { headers: { "Cache-Control": "no-store" } },
+  );
 }

@@ -19,4 +19,5 @@ export const RATE_LIMIT_HEADERS = {
 } as const;
 
 /** Error codes the API returns as JSON, so the chat can show the right friendly state. */
-export type ChatErrorCode = "invalid_request" | "visitor_limit" | "daily_limit";
+export type ChatErrorCode =
+  "invalid_request" | "visitor_limit" | "daily_limit" | "model_unavailable";

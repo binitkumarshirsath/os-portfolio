@@ -10,8 +10,13 @@ function handleQuickAction(quickAction: QuickAction) {
   runUiAction(quickAction.action);
 }
 
+const showContact = () => runUiAction({ type: "showContact" });
+
 export function ChatWindow() {
   return (
-    <AgentChatPanel suggestions={<QuickActionChips onSelect={handleQuickAction} />} />
+    <AgentChatPanel
+      suggestions={<QuickActionChips onSelect={handleQuickAction} />}
+      onShowContact={showContact}
+    />
   );
 }
