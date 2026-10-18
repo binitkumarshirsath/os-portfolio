@@ -1,11 +1,10 @@
 import type { ReactNode } from "react";
 import type { WindowId } from "@/features/window-manager";
 import { AboutWindow } from "./about-window";
-import { ActivityWindow } from "./activity-window";
 import { ChatWindow } from "./chat-window";
 import { ContactWindow } from "./contact-window";
 import { ExperienceWindow } from "./experience-window";
-import { JdMatchWindow } from "./jd-match-window";
+import { LazyActivityWindow, LazyJdMatchWindow } from "./lazy-windows";
 import { ProjectDetailWindow } from "./project-detail-window";
 import { ProjectsWindow } from "./projects-window";
 import { SkillsWindow } from "./skills-window";
@@ -23,8 +22,8 @@ export const windowBodies = {
   skills: <SkillsWindow />,
   about: <AboutWindow />,
   contact: <ContactWindow />,
-  activity: <ActivityWindow />,
-  "jd-match": <JdMatchWindow />,
+  activity: <LazyActivityWindow />,
+  "jd-match": <LazyJdMatchWindow />,
 } satisfies Record<WindowId, ReactNode>;
 
 export type WindowBodies = Record<WindowId, ReactNode>;
