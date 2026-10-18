@@ -1,5 +1,6 @@
 import { Chat } from "@ai-sdk/react";
 import { DefaultChatTransport, generateId, type UIMessage } from "ai";
+import type { AgentTrace } from "@/entities/agent-trace";
 import { RATE_LIMIT_HEADERS } from "@/shared/config/rate-limits";
 import type { AgentTools } from "./agent-tools";
 import { useChatQuota } from "./chat-quota";
@@ -11,6 +12,8 @@ export type AgentMessageMetadata = {
    * "jd-match": a summary of a job-match report, whose full version is in its window.
    */
   source: "quick-action" | "jd-match" | "model";
+  /** Model answers only: how the turn went, for the Activity Monitor. */
+  trace?: AgentTrace;
 };
 
 export type AgentMessage = UIMessage<AgentMessageMetadata, never, AgentTools>;

@@ -6,6 +6,7 @@
  */
 export { AgentChatPanel } from "./ui/agent-chat-panel";
 export { useAgentStatus, type AgentStatus } from "./model/use-agent-status";
+export { useLatestTrace } from "./model/use-latest-trace";
 export {
   agentChat,
   appendLocalExchange,

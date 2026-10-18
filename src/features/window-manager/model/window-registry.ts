@@ -96,7 +96,7 @@ export const windowRegistry: Record<WindowId, WindowDefinition> = {
     title: "Activity Monitor",
     icon: Activity,
     inDock: true,
-    frame: { top: 92, right: 24, width: 320, height: 420 },
+    frame: { top: 92, right: 24, width: 320, height: 520 },
   },
   "jd-match": {
     title: "Job Match",

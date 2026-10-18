@@ -6,6 +6,7 @@ import { agentTools } from "../model/agent-tools";
 import { systemPrompt } from "../model/system-prompt";
 import { fallbackModel, modelProviderOptions } from "@/shared/api/server";
 import type { ChatRequestMessage } from "./request-schema";
+import { createTraceRecorder } from "./trace-recorder";
 
 /**
  * Sent instead of raw provider errors, in the same JSON shape as HTTP errors.
@@ -34,6 +35,8 @@ export async function runAgent({ messages, headers, abortSignal }: RunAgentOptio
     tools: agentTools,
   });
 
+  const trace = createTraceRecorder();
+
   const result = streamText({
     model: fallbackModel,
     system: systemPrompt,
@@ -47,13 +50,22 @@ export async function runAgent({ messages, headers, abortSignal }: RunAgentOptio
     // Stop paying for tokens as soon as the visitor goes away.
     abortSignal,
     onError: ({ error }) => console.error("[agent] stream failed", error),
+    // Timings and token usage for the Activity Monitor.
+    experimental_onStepStart: ({ stepNumber }) => trace.stepStarted(stepNumber),
+    onStepFinish: (step) => trace.stepFinished(step),
+    experimental_onToolCallStart: ({ toolCall }) => trace.toolStarted(toolCall),
+    experimental_onToolCallFinish: ({ toolCall }) => trace.toolFinished(toolCall),
   });
 
   return result.toUIMessageStreamResponse<AgentMessage>({
     headers,
     sendReasoning: false,
-    messageMetadata: ({ part }) =>
-      part.type === "start" ? { source: "model" } : undefined,
+    // The trace rides on the final "finish" event, once every step has been recorded.
+    messageMetadata: ({ part }) => {
+      if (part.type === "start") return { source: "model" };
+      if (part.type === "finish") return { source: "model", trace: trace.finish() };
+      return undefined;
+    },
     onError: () => modelUnavailable,
   });
 }
