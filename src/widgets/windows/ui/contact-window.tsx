@@ -40,6 +40,13 @@ const rows: ContactRow[] = [
     external: true,
   },
   {
+    label: "LeetCode",
+    value: linkPath(profile.links.leetcode),
+    href: profile.links.leetcode,
+    icon: <ArrowUpRight aria-hidden className={iconClass} />,
+    external: true,
+  },
+  {
     label: "Resume",
     value: "PDF",
     href: profile.resumeHref,

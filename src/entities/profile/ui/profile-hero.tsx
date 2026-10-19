@@ -61,6 +61,13 @@ export function ProfileHero({ compact = false }: ProfileHeroProps) {
             className="underline-offset-4 hover:text-fg hover:underline"
           >
             LinkedIn
+          </a>{" "}
+          ·{" "}
+          <a
+            href={profile.links.leetcode}
+            className="underline-offset-4 hover:text-fg hover:underline"
+          >
+            LeetCode
           </a>
         </p>
       )}

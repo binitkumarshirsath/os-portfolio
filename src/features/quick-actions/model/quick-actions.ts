@@ -95,7 +95,7 @@ export const quickActions: readonly QuickAction[] = [
     id: "contact",
     label: "Contact",
     question: "How can I contact you?",
-    answer: `Email ${profile.email} — or find ${profile.name} on LinkedIn and GitHub. The Contact window has all the links.`,
+    answer: `Email ${profile.email} — or find ${profile.name} on LinkedIn, GitHub and LeetCode. The Contact window has all the links.`,
     action: { type: "showContact" },
   },
 ];

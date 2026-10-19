@@ -39,7 +39,7 @@ export const agentTools = {
   }),
   showContact: tool({
     description:
-      "Open the contact window with Binit's email, LinkedIn, GitHub and resume.",
+      "Open the contact window with Binit's email, LinkedIn, GitHub, LeetCode and resume.",
     inputSchema: z.object({}),
     execute: async () => shownToVisitor("contact window"),
   }),

@@ -25,6 +25,7 @@ export type Profile = {
   links: {
     github: string;
     linkedin: string;
+    leetcode: string;
   };
   /** Path to the resume PDF under public/. */
   resumeHref: string;

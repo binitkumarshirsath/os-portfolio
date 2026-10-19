@@ -19,6 +19,7 @@ Currently learning: ${profile.currentlyLearning.join(", ")}
 Email: ${profile.email}
 GitHub: ${profile.links.github}
 LinkedIn: ${profile.links.linkedin}
+LeetCode: ${profile.links.leetcode}
 Resume: available as a PDF download on this site`;
 
 const experienceText = experience

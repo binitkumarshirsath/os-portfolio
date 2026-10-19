@@ -17,6 +17,7 @@ export const profile = {
   links: {
     github: "https://github.com/binitkumarshirsath",
     linkedin: "https://in.linkedin.com/in/binitkumarshirsath",
+    leetcode: "https://leetcode.com/u/binitkumar0911/",
   },
   // Served from public/, so "Download resume" works without leaving the site.
   resumeHref: "/Binitkumar.S_Resume.pdf",
