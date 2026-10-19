@@ -3,12 +3,12 @@ import type { Experience } from "./types";
 // Newest first.
 export const experience = [
   {
-    // TODO(content): Binit will add APIwiz details. Do not fill these in by guessing.
+    // TODO(content): Binit will add the role, highlights and stack. Don't guess them.
     id: "apiwiz",
     company: "APIwiz",
     role: "[ADD ROLE]",
-    start: "[ADD START]",
-    end: "[ADD END]",
+    start: "Jul 2025",
+    end: "Present",
     highlights: ["[ADD HIGHLIGHT]"],
     stack: ["[ADD STACK]"],
   },
@@ -17,8 +17,7 @@ export const experience = [
     company: "Reliance Jio Infocomm Limited",
     role: "Software Developer Engineer",
     start: "Dec 2023",
-    // TODO(content): source data says "Present" — confirm the end date now that APIwiz is current.
-    end: "Present",
+    end: "Jun 2025",
     highlights: [
       "Built and deployed a full-stack web application for tracking team member performance, letting managers view, filter, sort and modify monthly performance data, improving operational efficiency and data accuracy.",
       "Implemented cron jobs and integrated NodeMailer to automate weekly performance reports for managers.",
