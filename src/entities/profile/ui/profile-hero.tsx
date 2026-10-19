@@ -1,6 +1,6 @@
 import { Download, Mail } from "lucide-react";
 import { profile } from "@/shared/content";
-import { ButtonLink } from "@/shared/ui";
+import { ButtonLink, newTab } from "@/shared/ui";
 
 type ProfileHeroProps = {
   /** Mobile home: name, role and the two buttons only, so the chat keeps most of the screen. */
@@ -34,6 +34,7 @@ export function ProfileHero({ compact = false }: ProfileHeroProps) {
         <ButtonLink
           href={profile.resumeHref}
           download
+          {...newTab}
           icon={<Download aria-hidden className="size-4" />}
         >
           Download resume
@@ -51,6 +52,7 @@ export function ProfileHero({ compact = false }: ProfileHeroProps) {
           {profile.yearsOfExperience} ·{" "}
           <a
             href={profile.links.github}
+            {...newTab}
             className="underline-offset-4 hover:text-fg hover:underline"
           >
             GitHub
@@ -58,6 +60,7 @@ export function ProfileHero({ compact = false }: ProfileHeroProps) {
           ·{" "}
           <a
             href={profile.links.linkedin}
+            {...newTab}
             className="underline-offset-4 hover:text-fg hover:underline"
           >
             LinkedIn
@@ -65,6 +68,7 @@ export function ProfileHero({ compact = false }: ProfileHeroProps) {
           ·{" "}
           <a
             href={profile.links.leetcode}
+            {...newTab}
             className="underline-offset-4 hover:text-fg hover:underline"
           >
             LeetCode

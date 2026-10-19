@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import type { Project } from "@/shared/content";
-import { ButtonLink, TagList } from "@/shared/ui";
+import { ButtonLink, newTab, TagList } from "@/shared/ui";
 
 export function ProjectDetail({ project }: { project: Project }) {
   return (
@@ -44,8 +44,7 @@ export function ProjectDetail({ project }: { project: Project }) {
           <ButtonLink
             key={link.href}
             href={link.href}
-            target="_blank"
-            rel="noreferrer"
+            {...newTab}
             variant={index === 0 ? "primary" : "secondary"}
             icon={<ArrowUpRight aria-hidden className="size-4" />}
           >

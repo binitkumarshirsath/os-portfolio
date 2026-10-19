@@ -3,6 +3,7 @@
 import { motion } from "motion/react";
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
+import { newTab } from "@/shared/ui";
 
 const lift = { whileHover: { y: -4 }, transition: { duration: 0.15 } } as const;
 const iconButtonClass =
@@ -75,6 +76,7 @@ export function DockLink({ label, icon: Icon, href, download }: DockLinkProps) {
       <motion.a
         href={href}
         download={download}
+        {...newTab}
         aria-label={label}
         className={iconButtonClass}
         {...lift}

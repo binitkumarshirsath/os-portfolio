@@ -1,6 +1,7 @@
 import { ArrowUpRight, Download, Mail } from "lucide-react";
 import type { ReactNode } from "react";
 import { profile } from "@/shared/content";
+import { newTab } from "@/shared/ui";
 
 type ContactRow = {
   label: string;
@@ -8,7 +9,6 @@ type ContactRow = {
   href: string;
   icon: ReactNode;
   download?: boolean;
-  external?: boolean;
 };
 
 // "https://github.com/someone" -> "someone", so the visible text always matches the link.
@@ -30,21 +30,18 @@ const rows: ContactRow[] = [
     value: linkPath(profile.links.linkedin),
     href: profile.links.linkedin,
     icon: <ArrowUpRight aria-hidden className={iconClass} />,
-    external: true,
   },
   {
     label: "GitHub",
     value: linkPath(profile.links.github),
     href: profile.links.github,
     icon: <ArrowUpRight aria-hidden className={iconClass} />,
-    external: true,
   },
   {
     label: "LeetCode",
     value: linkPath(profile.links.leetcode),
     href: profile.links.leetcode,
     icon: <ArrowUpRight aria-hidden className={iconClass} />,
-    external: true,
   },
   {
     label: "Resume",
@@ -63,7 +60,8 @@ export function ContactWindow() {
           <a
             href={row.href}
             download={row.download}
-            {...(row.external && { target: "_blank", rel: "noreferrer" })}
+            // Email opens the mail app; everything else leaves the site, so a new tab.
+            {...(!row.href.startsWith("mailto:") && newTab)}
             className="flex items-center gap-3 px-5 py-3 transition-colors hover:bg-raised"
           >
             {row.icon}

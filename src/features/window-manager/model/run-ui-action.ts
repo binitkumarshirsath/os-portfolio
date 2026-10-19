@@ -8,6 +8,11 @@ function downloadResume() {
   const link = document.createElement("a");
   link.href = profile.resumeHref;
   link.download = "";
+  // Browsers that ignore `download` (iOS Safari) open the PDF instead; a new tab keeps
+  // the site. No popup risk: desktop browsers honour `download`, and on phones the agent's
+  // tools only run from a tap on their chip.
+  link.target = "_blank";
+  link.rel = "noreferrer";
   link.click();
 }
 
