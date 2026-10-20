@@ -21,9 +21,9 @@ const stateClass: Record<HighlightState, string> = {
 export function ArchNodeCard({ data }: NodeProps<ArchFlowNode>) {
   return (
     <div
-      className={`w-[220px] rounded-md border bg-surface px-3.5 py-3 transition-[opacity,border-color,box-shadow] duration-300 ${
+      className={`w-[220px] cursor-pointer rounded-md border bg-surface px-3.5 py-3 transition-[opacity,border-color,box-shadow] duration-300 hover:border-accent/70 hover:opacity-100 ${
         data.tone === "muted" ? "border-dashed" : ""
-      } ${stateClass[data.state]}`}
+      } ${stateClass[data.state]} ${data.isOpen ? "outline-2 outline-offset-4 outline-ochre" : ""}`}
     >
       {/* Every side can start or end an arrow; the graph picks the sides that face each other. */}
       {sides.map(({ side, position }) => (

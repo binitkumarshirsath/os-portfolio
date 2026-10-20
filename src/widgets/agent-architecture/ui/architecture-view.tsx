@@ -1,17 +1,23 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useLastTurn } from "@/entities/agent-trace";
 import { useIsDesktop } from "@/shared/lib";
+import type { ArchNodeId } from "../model/graph";
 import { replaySteps } from "../model/replay";
 import { walkthroughSteps } from "../model/steps";
 import { useStepPlayer } from "../model/use-step-player";
+import { DeepDivePanel } from "./deep-dive-panel";
+import { DiveLinks } from "./dive-links";
 import { ModeSwitch, type Mode } from "./mode-switch";
 import { PageHeader } from "./page-header";
 import { StepCard } from "./step-card";
 import { StepControls } from "./step-controls";
 import { StepList } from "./step-list";
+
+/** Matches the panel's lg:w-[460px]; on phones it covers the whole canvas. */
+const PANEL_WIDTH_PX = 460;
 
 // React Flow measures the DOM, so it only renders in the browser.
 const FlowCanvas = dynamic(() => import("./flow-canvas").then((m) => m.FlowCanvas), {
@@ -20,7 +26,7 @@ const FlowCanvas = dynamic(() => import("./flow-canvas").then((m) => m.FlowCanva
 
 const tourOverview = {
   title: "Follow one question through the system",
-  text: "Press play to watch a question travel from the chat box to the answer, or pick any step. Every box is a real part of this site.",
+  text: "Press play to watch a question travel from the chat box to the answer, or pick any step. Every box is a real part of this site: click one for the engineering detail, including how it holds up against people trying to get around it.",
 };
 
 /** The /ai-agent page: the diagram, and a guided tour or replay beside it. */
@@ -36,6 +42,14 @@ export function ArchitectureView() {
     [isReplay, lastTurn],
   );
   const player = useStepPlayer(steps);
+  const [openId, setOpenId] = useState<ArchNodeId | null>(null);
+  const closeDive = useCallback(() => setOpenId(null), []);
+
+  function openDive(id: ArchNodeId) {
+    // Reading takes a while; the tour shouldn't move on underneath.
+    player.pause();
+    setOpenId(id);
+  }
 
   function changeMode(next: Mode) {
     setMode(next);
@@ -52,7 +66,8 @@ export function ArchitectureView() {
   return (
     <div className="flex h-dvh flex-col">
       <PageHeader />
-      <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
+      <div className="relative flex min-h-0 flex-1 flex-col lg:flex-row">
+        <DeepDivePanel nodeId={openId} onClose={closeDive} />
         {/* Boxes aren't focusable; the step list beside the diagram is its keyboard and screen-reader route. */}
         <section
           aria-label="Architecture diagram"
@@ -63,6 +78,9 @@ export function ArchitectureView() {
               key={isDesktop ? "wide" : "tall"}
               layout={isDesktop ? "wide" : "tall"}
               step={player.step}
+              openId={openId}
+              panelCoversPx={isDesktop ? PANEL_WIDTH_PX : null}
+              onOpen={openDive}
             />
           )}
         </section>
@@ -90,6 +108,7 @@ export function ArchitectureView() {
             />
             Show technical details
           </label>
+          <DiveLinks nodeIds={player.step?.nodeIds} onOpen={openDive} />
           <section aria-label="All steps" className="border-t border-line pt-4">
             <StepList steps={steps} activeIndex={player.index} onSelect={player.goTo} />
           </section>

@@ -10,8 +10,9 @@
   border: 0;
 }
 
+/* Every box opens its deep dive. */
 .arch-flow .react-flow__node {
-  cursor: default;
+  cursor: pointer;
 }
 
 .arch-flow .react-flow__attribution {

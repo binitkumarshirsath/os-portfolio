@@ -114,6 +114,9 @@ export const archEdges: readonly ArchEdge[] = [
   { id: "answer-trace", source: "answer", target: "trace", label: "spans" },
 ];
 
+export const isArchNodeId = (id: string): id is ArchNodeId =>
+  archNodes.some((node) => node.id === id);
+
 const COL = 280;
 const ROW = 170;
 

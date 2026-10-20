@@ -4,7 +4,10 @@ import { archEdges, archNodes, positions, type ArchNode, type Layout } from "./g
 export type HighlightState = "active" | "dim" | "idle";
 
 export type ArchFlowNode = Node<
-  Pick<ArchNode, "title" | "caption" | "tone"> & { state: HighlightState },
+  Pick<ArchNode, "title" | "caption" | "tone"> & {
+    state: HighlightState;
+    isOpen: boolean;
+  },
   "arch"
 >;
 
@@ -32,15 +35,24 @@ function facingSides(from: { x: number; y: number }, to: { x: number; y: number 
     : { sourceHandle: Position.Top, targetHandle: `in-${Position.Bottom}` };
 }
 
-/** The diagram in React Flow's shapes, lit up for the current step (or not, for the overview). */
-export function toFlow(layout: Layout, highlight: Highlight) {
+/**
+ * The diagram in React Flow's shapes, lit up for the current step (or not, for
+ * the overview), with the box whose deep dive is open marked.
+ */
+export function toFlow(layout: Layout, highlight: Highlight, openId: string | null) {
   const place = positions[layout];
 
   const nodes: ArchFlowNode[] = archNodes.map(({ id, title, caption, tone }) => ({
     id,
     type: "arch",
     position: place[id],
-    data: { title, caption, tone, state: stateOf(id, highlight?.nodeIds) },
+    data: {
+      title,
+      caption,
+      tone,
+      state: stateOf(id, highlight?.nodeIds),
+      isOpen: id === openId,
+    },
   }));
 
   const edges: FlowEdgeType[] = archEdges.map(({ id, source, target, label, dashed }) => {

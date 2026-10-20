@@ -16,6 +16,12 @@ export const AGENT_LIMITS = {
   maxMessageChars: 500,
   /** Only the most recent messages are sent to the model, to cap cost. */
   maxHistoryMessages: 6,
+  /** Rejects absurd payloads before JSON parsing does any work on them. */
+  maxBodyChars: 64_000,
+  /** The client sends the whole conversation; we only ever use the tail of it. */
+  maxMessages: 60,
+  /** Assistant turns come back from the client too, so they're capped as well. */
+  maxAssistantChars: 4_000,
 } as const;
 
 export const JD_MATCH_LIMITS = {

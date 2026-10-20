@@ -2,12 +2,11 @@ import "server-only";
 import { z } from "zod";
 import { AGENT_LIMITS } from "@/shared/config/ai";
 
-/** Rejects absurd payloads before JSON parsing does any work on them. */
-const MAX_BODY_CHARS = 64_000;
-/** The client sends the whole conversation; we only ever use the tail of it. */
-const MAX_MESSAGES = 60;
-/** Assistant turns come back from the client too, so they're capped as well. */
-const MAX_ASSISTANT_CHARS = 4_000;
+const {
+  maxBodyChars: MAX_BODY_CHARS,
+  maxMessages: MAX_MESSAGES,
+  maxAssistantChars: MAX_ASSISTANT_CHARS,
+} = AGENT_LIMITS;
 
 const textPart = z.object({ type: z.literal("text"), text: z.string() });
 
