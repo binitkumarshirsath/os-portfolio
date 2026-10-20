@@ -3,14 +3,20 @@ import type { Experience } from "./types";
 // Newest first.
 export const experience = [
   {
-    // TODO(content): Binit will add the role, highlights and stack. Don't guess them.
     id: "apiwiz",
     company: "APIwiz",
-    role: "[ADD ROLE]",
+    role: "SDE2 – Frontend Developer",
     start: "Jul 2025",
     end: "Present",
-    highlights: ["[ADD HIGHLIGHT]"],
-    stack: ["[ADD STACK]"],
+    highlights: [
+      "Design Studio: developed a node-based OpenAPI specification editor using React Flow, enabling visual specification creation and JSON-to-graph rendering. Resolved UI unresponsiveness with large, deeply nested JSON specifications spanning thousands of lines by eliminating an unnecessary deep-cloning operation before passing data to React Flow.",
+      "Monaco Editor inline commenting: implemented an inline commenting system for OpenAPI specifications, letting users select editor lines and add contextual comments. Used JSON parsing and line-number-to-JSON-path mapping to attach each comment to a specific value in the specification.",
+      "Observability dashboard: developed dashboard interfaces and integrated backend APIs to display API metrics, logs, traces and charts, supporting API monitoring and operational troubleshooting.",
+      "Developer marketplace: developed frontend workflows across package discovery, subscriptions, application creation and product consumption, integrating backend APIs across interconnected business workflows.",
+      "DocuWiz documentation platform: migrated existing frontend features into a developer documentation platform for guides, recipes and API references, building UI layouts and reusable components for a consistent user experience.",
+    ],
+    // Only what the description names; add the rest of the stack here as needed.
+    stack: ["React", "React Flow", "Monaco Editor", "OpenAPI", "JSON"],
   },
   {
     id: "reliance-jio",
