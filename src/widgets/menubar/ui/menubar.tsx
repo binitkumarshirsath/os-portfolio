@@ -21,7 +21,7 @@ export function Menubar() {
   const agentStatus = useAgentStatus();
 
   return (
-    <header className="relative z-50 flex h-8 shrink-0 items-center justify-between border-b border-line bg-background px-4 font-mono text-xs">
+    <header className="relative z-50 flex h-8 shrink-0 items-center justify-between border-b border-line bg-background/70 px-4 font-mono text-xs backdrop-blur-md">
       <div className="flex items-center gap-6">
         <span className="font-semibold tracking-[0.25em] text-accent">BINIT · OS</span>
         <nav aria-label="Main">

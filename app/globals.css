@@ -7,11 +7,13 @@
  */
 @theme {
   --color-background: #070707;
-  --color-surface: #0e0c0c;
-  --color-raised: #140e0e;
+  /* A step further from the background than before, so windows read as objects. */
+  --color-surface: #110e0e;
+  --color-raised: #1a1414;
 
-  --color-line: #2a1012;
-  --color-line-strong: #3a1a1c;
+  /* Warm neutrals rather than dark reds: red is kept for what matters. */
+  --color-line: #2a1d1d;
+  --color-line-strong: #3e2a2a;
 
   --color-fg: #f2ece8;
   /* ~7:1 on the background, comfortably above the 4.5:1 minimum. */
@@ -37,6 +39,8 @@
 
   body {
     background-color: var(--color-background);
+    /* A faint paper grain for the ink-on-paper feel. Tiled SVG noise, no image request. */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.045 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     color: var(--color-fg);
     font-family: var(--font-sans);
   }
@@ -143,4 +147,16 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/*
+ * The sunset: a crimson sun whose lower part is cut into bars by the horizon,
+ * the classic Japanese sunset motif, drawn with a mask so the cuts show the page
+ * through. Two mask layers are combined: solid above the horizon, stripes below.
+ */
+.sun {
+  background: linear-gradient(180deg, rgb(229 56 59 / 0.34), rgb(122 36 39 / 0.5));
+  mask-image:
+    linear-gradient(to bottom, black 56%, transparent 56%),
+    repeating-linear-gradient(to bottom, black 0 11px, transparent 11px 16px);
 }

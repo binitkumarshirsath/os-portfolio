@@ -60,7 +60,7 @@ export function TitleBar({
     <div
       onPointerDown={onDragStart}
       onDoubleClick={onToggleMaximize}
-      className={`flex h-9 shrink-0 touch-none items-center gap-2 border-b border-line bg-raised px-2 select-none ${
+      className={`flex h-9 shrink-0 touch-none items-center gap-2 border-b border-line bg-raised/70 px-2 select-none ${
         isMaximized ? "" : "cursor-grab active:cursor-grabbing"
       }`}
     >

@@ -1,11 +1,14 @@
 import { Download, Mail } from "lucide-react";
-import { profile } from "@/shared/content";
+import { experience, profile } from "@/shared/content";
 import { ButtonLink, newTab } from "@/shared/ui";
 
 type ProfileHeroProps = {
   /** Mobile home: name, role and the two buttons only, so the chat keeps most of the screen. */
   compact?: boolean;
 };
+
+// The current role, straight from the experience content: whichever entry ends "Present".
+const currentRole = experience.find((role) => role.end === "Present");
 
 /**
  * Who Binit is and how to reach him, readable in seconds without the chat.
@@ -14,8 +17,13 @@ type ProfileHeroProps = {
 export function ProfileHero({ compact = false }: ProfileHeroProps) {
   return (
     <section aria-labelledby="hero-name" className={compact ? "space-y-3" : "space-y-5"}>
-      <p className="font-mono text-xs tracking-[0.14em] text-accent-text uppercase">
-        {profile.role} · {profile.level} · {profile.location}
+      <p className="flex items-center gap-3 font-mono text-xs tracking-[0.14em] whitespace-nowrap text-accent-text uppercase">
+        <span aria-hidden className="h-px w-6 shrink-0 bg-accent" />
+        {/* One line whatever the font: wrapping here shifted the whole page once
+            JetBrains Mono replaced its wider fallback (measured CLS 0.24). */}
+        <span className="truncate">
+          {profile.role} · {profile.level} · {profile.location.split(",")[0]}
+        </span>
       </p>
       <h1
         id="hero-name"
@@ -28,6 +36,18 @@ export function ProfileHero({ compact = false }: ProfileHeroProps) {
       {!compact && (
         <p className="max-w-prose text-base leading-relaxed text-fg-muted">
           {profile.positioning}
+        </p>
+      )}
+      {currentRole && (
+        <p className="flex items-center gap-2 text-sm text-fg-muted">
+          <span aria-hidden className="relative flex size-2">
+            <span className="absolute inset-0 animate-ping rounded-full bg-accent/60" />
+            <span className="relative size-2 rounded-full bg-accent" />
+          </span>
+          <span>
+            Now · <span className="text-fg">{currentRole.role}</span> at{" "}
+            <span className="text-fg">{currentRole.company}</span>
+          </span>
         </p>
       )}
       <div className="flex flex-wrap gap-3 pt-1">

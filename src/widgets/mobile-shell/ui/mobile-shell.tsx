@@ -75,8 +75,15 @@ export function MobileShell({ bodies }: MobileShellProps) {
             }`}
           >
             {topId === "chat" && (
-              <div className="shrink-0 border-b border-line p-4">
-                <ProfileHero compact />
+              <div className="relative shrink-0 overflow-hidden border-b border-line p-4">
+                {/* A small sunset behind the hero, so phones get the signature visual too. */}
+                <div
+                  aria-hidden
+                  className="sun pointer-events-none absolute -top-10 -right-12 size-52 rounded-full opacity-80"
+                />
+                <div className="relative">
+                  <ProfileHero compact />
+                </div>
               </div>
             )}
             <div className="min-h-0 flex-1">{bodies[topId]}</div>

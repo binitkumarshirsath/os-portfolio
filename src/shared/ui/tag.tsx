@@ -2,10 +2,10 @@ type TagProps = {
   children: string;
 };
 
-/** A small mono label for a technology or skill. */
+/** A small mono label for a technology or skill. Neutral on purpose: red marks actions. */
 export function Tag({ children }: TagProps) {
   return (
-    <span className="inline-block rounded-sm border border-line bg-accent-tint px-1.5 py-0.5 font-mono text-[11px] leading-4 text-accent-text">
+    <span className="inline-block rounded-full border border-line-strong bg-raised/60 px-2 py-0.5 font-mono text-[11px] leading-4 text-fg-muted">
       {children}
     </span>
   );
