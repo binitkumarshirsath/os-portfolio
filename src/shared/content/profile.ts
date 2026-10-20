@@ -9,7 +9,7 @@ export const profile = {
   location: "Bengaluru, India",
   timeZone: "Asia/Kolkata",
   positioning:
-    "Frontend engineer building observability UIs — dashboards and OpenTelemetry metric visualizations.",
+    "Frontend engineer building Experiences ",
   summary:
     "Binitkumar is a Frontend Engineer (SDE2) with about three years of experience, based in Bengaluru. He builds observability interfaces: Datadog-style dashboards and OpenTelemetry metric visualizations. He has also worked full-stack at Reliance Jio and Healthires with React, Next.js, Spring Boot, Node/Express, MongoDB and AWS, and is currently learning AI engineering.",
   currentlyLearning: ["Prompting", "ReAct agents", "Tool calling"],
