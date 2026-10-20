@@ -1,0 +1,30 @@
+/* Washi styling for React Flow's base styles. Arrows are only for looking at,
+   so the connection handles are hidden entirely. */
+.arch-flow .react-flow__handle {
+  opacity: 0;
+  pointer-events: none;
+  width: 1px;
+  height: 1px;
+  min-width: 0;
+  min-height: 0;
+  border: 0;
+}
+
+.arch-flow .react-flow__node {
+  cursor: default;
+}
+
+.arch-flow .react-flow__attribution {
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.arch-flow .react-flow__attribution a {
+  color: var(--color-fg-muted);
+}
+
+/* Lit arrows are raised above the others; their labels must stay above them too. */
+.arch-flow .react-flow__edgelabel-renderer {
+  z-index: 5;
+}

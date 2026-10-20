@@ -18,6 +18,7 @@
     "@ai-sdk/react": "^3.0.312",
     "@upstash/ratelimit": "^2.2.0",
     "@upstash/redis": "^1.39.0",
+    "@xyflow/react": "^12.12.0",
     "ai": "^6.0.309",
     "lucide-react": "^1.59.0",
     "mammoth": "^1.13.0",
