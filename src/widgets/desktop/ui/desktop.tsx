@@ -9,6 +9,7 @@ import {
   useWindowStore,
   type WindowId,
 } from "@/features/window-manager";
+import { DesktopIcons } from "./desktop-icons";
 import { InkLandscape } from "./ink-landscape";
 
 type DesktopProps = {
@@ -35,6 +36,8 @@ export function Desktop({ bodies }: DesktopProps) {
       <div className="absolute top-1/2 left-12 w-[19rem] -translate-y-1/2 xl:left-20 xl:w-[24rem]">
         <ProfileHero />
       </div>
+
+      <DesktopIcons />
 
       {/* Click-through layer: only the windows themselves catch the pointer. */}
       <div ref={boundsRef} className="pointer-events-none absolute inset-0">
