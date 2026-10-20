@@ -10,4 +10,6 @@ export type UiAction =
   | { type: "openWindow"; windowId: WindowId }
   | { type: "showProject"; slug: ProjectSlug }
   | { type: "openResume" }
-  | { type: "showContact" };
+  | { type: "showContact" }
+  /** Opens one of the site's own pages in a new tab, so the desktop stays where it was. */
+  | { type: "openPage"; href: string };

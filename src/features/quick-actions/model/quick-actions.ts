@@ -1,3 +1,4 @@
+import { ROUTES } from "@/shared/config/routes";
 import type { UiAction } from "@/shared/config/ui-actions";
 import {
   experience,
@@ -80,8 +81,11 @@ export const quickActions: readonly QuickAction[] = [
     id: "how-built",
     label: "How was this agent built?",
     question: "How was this agent built?",
-    answer: bullets(siteArchitecture),
-    action: { type: "openWindow", windowId: "activity" },
+    answer: [
+      bullets(siteArchitecture),
+      "The full walkthrough, drawn as a diagram, just opened in a new tab.",
+    ].join("\n\n"),
+    action: { type: "openPage", href: ROUTES.agentArchitecture },
   },
   {
     id: "jd-match",

@@ -29,5 +29,9 @@ export function runUiAction(action: UiAction): void {
       return openWindow("contact");
     case "openResume":
       return downloadResume();
+    case "openPage":
+      // Only reached from a click (quick actions), so the browser allows the new tab.
+      window.open(action.href, "_blank", "noopener");
+      return;
   }
 }
