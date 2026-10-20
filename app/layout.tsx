@@ -3,7 +3,7 @@ import { JetBrains_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import { getSiteUrl } from "@/shared/config/site-url";
 import { profile } from "@/shared/content";
-import { MotionProvider } from "@/shared/ui";
+import { MotionProvider, ThemeScript } from "@/shared/ui";
 import { BootScript } from "@/widgets/boot-screen";
 import "./globals.css";
 
@@ -69,10 +69,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       className={`${display.variable} ${body.variable} ${mono.variable} h-full antialiased`}
-      // The boot script may add a class before React hydrates.
+      // The theme and boot scripts set attributes on <html> before React hydrates.
       suppressHydrationWarning
     >
       <head>
+        <ThemeScript />
         <BootScript />
       </head>
       <body className="min-h-full">

@@ -1,8 +1,9 @@
 @import "tailwindcss";
 
 /*
- * Design tokens: "washi" (paper and ink) by day, "ink night" when the visitor's
- * system is in dark mode. Every colour on the site comes from these, so the theme
+ * Design tokens: "washi" (paper and ink) by default, "ink night" when <html> has
+ * data-theme="dark". An inline script sets that attribute before first paint, from
+ * the visitor's saved choice or else their system setting (see ThemeScript). Every colour on the site comes from these, so the theme
  * switches by redefining them once. Each becomes a Tailwind utility, e.g.
  * --color-surface -> bg-surface, --color-fg-muted -> text-fg-muted.
  * Contrast checked for both modes: body text >= 14:1, muted >= 5:1, button text >= 4.7:1.
@@ -32,23 +33,21 @@
   --color-moss: #7a8a57;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-background: #12100d;
-    --color-surface: #1a1713;
-    --color-raised: #231f1a;
-    --color-line: #2e2822;
-    --color-line-strong: #423a31;
-    --color-fg: #ede6da;
-    --color-fg-muted: #a69c8f;
-    --color-accent: #d9543d;
-    --color-accent-deep: #9c3122;
-    --color-accent-tint: #2a1712;
-    --color-accent-text: #f0927c;
-    --color-on-accent: #1a0d08;
-    --color-ochre: #c9922b;
-    --color-moss: #8a9a66;
-  }
+:root[data-theme="dark"] {
+  --color-background: #12100d;
+  --color-surface: #1a1713;
+  --color-raised: #231f1a;
+  --color-line: #2e2822;
+  --color-line-strong: #423a31;
+  --color-fg: #ede6da;
+  --color-fg-muted: #a69c8f;
+  --color-accent: #d9543d;
+  --color-accent-deep: #9c3122;
+  --color-accent-tint: #2a1712;
+  --color-accent-text: #f0927c;
+  --color-on-accent: #1a0d08;
+  --color-ochre: #c9922b;
+  --color-moss: #8a9a66;
 }
 
 /* `inline` because these point at variables next/font sets on <html> at runtime. */
@@ -60,7 +59,11 @@
 
 @layer base {
   :root {
-    color-scheme: light dark;
+    color-scheme: light;
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
   }
 
   body {
@@ -186,8 +189,6 @@
   --ink-near: color-mix(in oklab, var(--color-fg) 23%, var(--color-background));
 }
 
-@media (prefers-color-scheme: dark) {
-  body {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 0.95 0 0 0 0 0.9 0 0 0 0.04 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  }
+[data-theme="dark"] body {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 0.95 0 0 0 0 0.9 0 0 0 0.04 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }

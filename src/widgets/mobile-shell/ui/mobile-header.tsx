@@ -7,7 +7,7 @@ import {
   useWindowStore,
   windowRegistry,
 } from "@/features/window-manager";
-import { HankoSeal } from "@/shared/ui";
+import { HankoSeal, ThemeToggle } from "@/shared/ui";
 
 // Windows that aren't tabs (About, Skills, Activity) are reachable from the header.
 const headerWindowIds = DOCK_WINDOW_IDS.filter((id) => !isMobileTab(id));
@@ -50,6 +50,12 @@ export function MobileHeader({ title, titleId, showBack, onBack }: MobileHeaderP
       </div>
       <nav aria-label="More">
         <ul className="flex">
+          <li>
+            <ThemeToggle
+              className="grid size-11 place-items-center text-fg-muted hover:text-fg"
+              iconClassName="size-5"
+            />
+          </li>
           {headerWindowIds.map((id) => {
             const { title: label, icon: Icon } = windowRegistry[id];
             return (

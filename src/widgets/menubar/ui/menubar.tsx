@@ -2,7 +2,7 @@
 
 import { useAgentStatus, type AgentStatus } from "@/features/agent-chat";
 import { useWindowStore, type WindowId } from "@/features/window-manager";
-import { HankoSeal } from "@/shared/ui";
+import { HankoSeal, ThemeToggle } from "@/shared/ui";
 import { Clock } from "./clock";
 
 const menuItems: { label: string; windowId: WindowId }[] = [
@@ -44,7 +44,11 @@ export function Menubar() {
           </ul>
         </nav>
       </div>
-      <div className="flex items-center gap-5">
+      <div className="flex items-center gap-4">
+        <ThemeToggle
+          className="grid size-6 place-items-center rounded-sm text-fg-muted transition-colors hover:bg-raised hover:text-fg"
+          iconClassName="size-3.5"
+        />
         <span className="flex items-center gap-2 text-fg-muted">
           <span
             aria-hidden
