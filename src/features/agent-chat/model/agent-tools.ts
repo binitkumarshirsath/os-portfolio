@@ -1,5 +1,6 @@
-import { tool, type InferUITools } from "ai";
+import { tool, type InferUITools, type Tool } from "ai";
 import { z } from "zod";
+import type { AgentToolName } from "@/shared/config/agent-tools";
 import { openableWindowIds, projectSlugs } from "./tool-targets";
 
 /**
@@ -43,6 +44,6 @@ export const agentTools = {
     inputSchema: z.object({}),
     execute: async () => shownToVisitor("contact window"),
   }),
-};
+} satisfies Record<AgentToolName, Tool>;
 
 export type AgentTools = InferUITools<typeof agentTools>;

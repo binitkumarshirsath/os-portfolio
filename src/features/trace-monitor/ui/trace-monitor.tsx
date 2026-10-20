@@ -1,6 +1,5 @@
-import type { AgentTrace } from "@/entities/agent-trace";
+import { shortModelName, type AgentTrace } from "@/entities/agent-trace";
 import { AI_MODELS } from "@/shared/config/ai";
-import { shortModelName } from "./format";
 import { SpanTimeline } from "./span-timeline";
 import { TraceStats } from "./trace-stats";
 

@@ -1,5 +1,4 @@
-import type { AgentTrace } from "@/entities/agent-trace";
-import { formatCount, formatDuration } from "./format";
+import { formatCount, formatDuration, type AgentTrace } from "@/entities/agent-trace";
 
 function StatTile({
   label,

@@ -1,6 +1,6 @@
 import { Chat } from "@ai-sdk/react";
 import { DefaultChatTransport, generateId, type UIMessage } from "ai";
-import type { AgentTrace } from "@/entities/agent-trace";
+import { saveLastTurn, type AgentTrace } from "@/entities/agent-trace";
 import { RATE_LIMIT_HEADERS } from "@/shared/config/rate-limits";
 import type { AgentTools } from "./agent-tools";
 import { useChatQuota } from "./chat-quota";
@@ -36,6 +36,16 @@ export const agentChat = new Chat<AgentMessage>({
   // Fires as soon as a tool's input has streamed in, so a window can open while
   // the model is still writing the answer that goes with it.
   onToolCall: ({ toolCall }) => runToolCall(toolCall),
+  // Keep the finished turn (question + trace) so the architecture page can replay it.
+  onFinish: ({ message, messages }) => {
+    const trace = message.metadata?.trace;
+    const question = messages.findLast((m) => m.role === "user");
+    if (!trace || !question) return;
+    const text = question.parts
+      .map((part) => (part.type === "text" ? part.text : ""))
+      .join("");
+    saveLastTurn({ question: text, trace });
+  },
 });
 
 function textMessage(

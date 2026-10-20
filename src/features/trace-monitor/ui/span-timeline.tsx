@@ -1,5 +1,10 @@
-import type { AgentTrace, TraceSpan } from "@/entities/agent-trace";
-import { formatCount, formatDuration, shortModelName } from "./format";
+import {
+  formatCount,
+  formatDuration,
+  shortModelName,
+  type AgentTrace,
+  type TraceSpan,
+} from "@/entities/agent-trace";
 
 /** Spans shorter than this still get a visible, hoverable mark. */
 const MIN_MARK_PX = 4;
