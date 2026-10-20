@@ -1,7 +1,10 @@
 # Binit OS
 
 The portfolio of Binitkumar Shirsath, Frontend Engineer, built as a small desktop
-OS in red and black. Recruiters can read everything that matters (who he is, his
+OS on washi paper: sumi-ink type, one vermilion accent, and an ink-wash landscape
+of misty ridges under a red sun, after Japanese prints and anime background art.
+It follows the visitor's system theme, with an "ink night" version in dark mode.
+Recruiters can read everything that matters (who he is, his
 strongest work, how to reach him, the resume) without touching the chat. The AI
 agent is the layer on top: it answers questions about his work, opens windows to
 show things, matches job descriptions, and traces its own work in an Activity
@@ -184,5 +187,5 @@ weight instead (`scripts/subset-fonts.mjs`).
 ## Credits
 
 Fonts: Shippori Mincho B1, Zen Kaku Gothic New and JetBrains Mono, all under the
-SIL Open Font License. Icons: Lucide. The red-and-black look is original; no
-third-party logos or artwork are used.
+SIL Open Font License. Icons: Lucide. The landscape, seal and colours are drawn in
+code for this site; no third-party logos, characters or artwork are used.

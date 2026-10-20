@@ -60,7 +60,7 @@ export function TitleBar({
     <div
       onPointerDown={onDragStart}
       onDoubleClick={onToggleMaximize}
-      className={`flex h-9 shrink-0 touch-none items-center gap-2 border-b border-line bg-raised/70 px-2 select-none ${
+      className={`flex h-9 shrink-0 touch-none items-center gap-2 border-b border-line bg-raised/50 px-2 select-none ${
         isMaximized ? "" : "cursor-grab active:cursor-grabbing"
       }`}
     >
@@ -68,25 +68,25 @@ export function TitleBar({
         <Light
           label={`Close ${title}`}
           icon={X}
-          colorClass="bg-accent text-background"
+          colorClass="bg-accent text-surface"
           onClick={onClose}
         />
         <Light
           label={`Minimize ${title}`}
           icon={Minus}
-          colorClass="bg-accent-deep text-fg"
+          colorClass="bg-ochre text-surface"
           onClick={onMinimize}
         />
         <Light
           label={isMaximized ? `Restore ${title}` : `Maximize ${title}`}
           icon={isMaximized ? Minimize2 : Maximize2}
-          colorClass="bg-line-strong text-fg"
+          colorClass="bg-moss text-surface"
           onClick={onToggleMaximize}
         />
       </div>
       <h2
         id={titleId}
-        className={`font-mono text-[11px] tracking-[0.18em] uppercase ${isFocused ? "text-fg" : "text-fg-muted"}`}
+        className={`font-display text-[13px] font-semibold ${isFocused ? "text-fg" : "text-fg-muted"}`}
       >
         {title}
       </h2>

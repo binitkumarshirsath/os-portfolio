@@ -2,8 +2,8 @@ import type { JdFit, JdMatchReport } from "../model/report-schema";
 import { fitLabels } from "../model/summarize-report";
 
 const fitStyles: Record<JdFit, string> = {
-  strong: "bg-accent text-background",
-  good: "bg-accent text-background",
+  strong: "bg-accent text-on-accent",
+  good: "bg-accent text-on-accent",
   partial: "bg-accent-deep text-fg",
   low: "bg-line-strong text-fg",
 };

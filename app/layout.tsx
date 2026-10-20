@@ -55,7 +55,11 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#070707",
+  // Matches the paper by day and the ink at night (see the tokens in globals.css).
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f3ede2" },
+    { media: "(prefers-color-scheme: dark)", color: "#12100d" },
+  ],
   // Lets the mobile tab bar extend under the iPhone home indicator (padded via safe-area insets).
   viewportFit: "cover",
 };

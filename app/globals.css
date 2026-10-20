@@ -1,28 +1,54 @@
 @import "tailwindcss";
 
 /*
- * Design tokens. The site is dark only, so there is no light theme to switch to.
- * Each token becomes a Tailwind utility, e.g. --color-surface -> bg-surface,
- * --color-fg-muted -> text-fg-muted, --color-line -> border-line.
+ * Design tokens: "washi" (paper and ink) by day, "ink night" when the visitor's
+ * system is in dark mode. Every colour on the site comes from these, so the theme
+ * switches by redefining them once. Each becomes a Tailwind utility, e.g.
+ * --color-surface -> bg-surface, --color-fg-muted -> text-fg-muted.
+ * Contrast checked for both modes: body text >= 14:1, muted >= 5:1, button text >= 4.7:1.
  */
 @theme {
-  --color-background: #070707;
-  /* A step further from the background than before, so windows read as objects. */
-  --color-surface: #110e0e;
-  --color-raised: #1a1414;
+  /* Warm washi paper, never pure white: easier on the eyes for long reading. */
+  --color-background: #f3ede2;
+  --color-surface: #fbf8f1;
+  --color-raised: #eee6d8;
 
-  /* Warm neutrals rather than dark reds: red is kept for what matters. */
-  --color-line: #2a1d1d;
-  --color-line-strong: #3e2a2a;
+  --color-line: #e0d6c5;
+  --color-line-strong: #cdbfa9;
 
-  --color-fg: #f2ece8;
-  /* ~7:1 on the background, comfortably above the 4.5:1 minimum. */
-  --color-fg-muted: #a39a97;
+  /* Sumi ink, never pure black. */
+  --color-fg: #1f1b17;
+  --color-fg-muted: #675d53;
 
-  --color-accent: #e5383b;
-  --color-accent-deep: #7a2427;
-  --color-accent-tint: #1a0d0e;
-  --color-accent-text: #ff8a8c;
+  /* Shu-iro, the vermilion of hanko seals and torii gates. The only loud colour. */
+  --color-accent: #c2402c;
+  --color-accent-deep: #9c3122;
+  --color-accent-tint: #f7e3da;
+  --color-accent-text: #a93522;
+  --color-on-accent: #fff9f2;
+
+  /* Two more traditional colours, only for the window controls. */
+  --color-ochre: #c9922b;
+  --color-moss: #7a8a57;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: #12100d;
+    --color-surface: #1a1713;
+    --color-raised: #231f1a;
+    --color-line: #2e2822;
+    --color-line-strong: #423a31;
+    --color-fg: #ede6da;
+    --color-fg-muted: #a69c8f;
+    --color-accent: #d9543d;
+    --color-accent-deep: #9c3122;
+    --color-accent-tint: #2a1712;
+    --color-accent-text: #f0927c;
+    --color-on-accent: #1a0d08;
+    --color-ochre: #c9922b;
+    --color-moss: #8a9a66;
+  }
 }
 
 /* `inline` because these point at variables next/font sets on <html> at runtime. */
@@ -34,13 +60,13 @@
 
 @layer base {
   :root {
-    color-scheme: dark;
+    color-scheme: light dark;
   }
 
   body {
     background-color: var(--color-background);
-    /* A faint paper grain for the ink-on-paper feel. Tiled SVG noise, no image request. */
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.045 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    /* Paper fibre: tiled SVG noise, dark specks by day (light specks at night, below). */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.2 0 0 0 0 0.15 0 0 0 0 0.1 0 0 0 0.07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     color: var(--color-fg);
     font-family: var(--font-sans);
   }
@@ -97,8 +123,9 @@
     }
   }
 
+  /* A pale vermilion wash, like a highlighter on paper; text stays ink. */
   ::selection {
-    background-color: var(--color-accent-deep);
+    background-color: var(--color-accent-tint);
     color: var(--color-fg);
   }
 }
@@ -150,13 +177,17 @@
 }
 
 /*
- * The sunset: a crimson sun whose lower part is cut into bars by the horizon,
- * the classic Japanese sunset motif, drawn with a mask so the cuts show the page
- * through. Two mask layers are combined: solid above the horizon, stripes below.
+ * Ink-wash ridge tones for the landscape: the ink mixed into the paper at three
+ * strengths. Defined from the tokens, so they follow day and night by themselves.
  */
-.sun {
-  background: linear-gradient(180deg, rgb(229 56 59 / 0.34), rgb(122 36 39 / 0.5));
-  mask-image:
-    linear-gradient(to bottom, black 56%, transparent 56%),
-    repeating-linear-gradient(to bottom, black 0 11px, transparent 11px 16px);
+:root {
+  --ink-far: color-mix(in oklab, var(--color-fg) 9%, var(--color-background));
+  --ink-mid: color-mix(in oklab, var(--color-fg) 15%, var(--color-background));
+  --ink-near: color-mix(in oklab, var(--color-fg) 23%, var(--color-background));
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 0.95 0 0 0 0 0.9 0 0 0 0.04 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
 }

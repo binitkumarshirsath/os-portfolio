@@ -7,6 +7,7 @@ import {
   useWindowStore,
   windowRegistry,
 } from "@/features/window-manager";
+import { HankoSeal } from "@/shared/ui";
 
 // Windows that aren't tabs (About, Skills, Activity) are reachable from the header.
 const headerWindowIds = DOCK_WINDOW_IDS.filter((id) => !isMobileTab(id));
@@ -35,8 +36,9 @@ export function MobileHeader({ title, titleId, showBack, onBack }: MobileHeaderP
             <ChevronLeft aria-hidden className="size-5" />
           </button>
         ) : (
-          <span className="px-3 font-mono text-xs font-semibold tracking-[0.25em] text-accent">
-            BINIT · OS
+          <span className="flex items-center gap-2 px-3">
+            <HankoSeal size={20} />
+            <span className="font-display text-base font-semibold text-fg">Binit OS</span>
           </span>
         )}
         <h2

@@ -135,12 +135,12 @@ export function WindowFrame({ id, boundsRef, children }: WindowFrameProps) {
         exit={{ opacity: 0, scale: 0.96 }}
         transition={{ duration: 0.18, ease: "easeOut" }}
         style={{ x: dockX, y: dockY, scale, opacity }}
-        // Slightly see-through so the sun glows behind the windows; the focused one
-        // gets a soft red halo so it's obvious which window has the keyboard.
-        className={`flex size-full flex-col overflow-hidden rounded-lg border bg-surface/90 backdrop-blur-md transition-[border-color,box-shadow] duration-200 ${
+        // Sheets of paper: solid, with a soft brown shadow rather than glass or glow.
+        // The focused one gets a thin vermilion top edge, like a bookmark ribbon.
+        className={`flex size-full flex-col overflow-hidden rounded-lg border bg-surface transition-[border-color,box-shadow] duration-200 ${
           isFocused
-            ? "border-accent/45 shadow-[0_0_0_1px_rgb(229_56_59/0.08),0_30px_80px_-28px_rgb(229_56_59/0.35),0_24px_60px_-24px_rgb(0_0_0/0.9)]"
-            : "border-line shadow-[0_24px_60px_-24px_rgb(0_0_0/0.9)]"
+            ? "border-line-strong shadow-[inset_0_2px_0_var(--color-accent),0_1px_2px_rgb(60_40_20/0.08),0_24px_48px_-20px_rgb(60_40_20/0.32)]"
+            : "border-line shadow-[0_1px_2px_rgb(60_40_20/0.06),0_16px_36px_-22px_rgb(60_40_20/0.22)]"
         }`}
       >
         <TitleBar

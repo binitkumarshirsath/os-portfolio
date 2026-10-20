@@ -23,7 +23,7 @@ const FONTS = [
 ];
 
 // Printable ASCII, Latin-1, general punctuation (dashes, quotes, ellipsis),
-// and the few symbols the UI uses (arrows, ● ○, ×).
+// the few symbols the UI uses (arrows, ● ○, ×), and the katakana for the name.
 const codePoints = [
   ...range(0x20, 0x7e),
   ...range(0xa0, 0xff),
@@ -38,6 +38,11 @@ const codePoints = [
   0x25cb,
   0x25cf,
   0x2715,
+  // ビニット ("Binit" in katakana), for the hero's vertical margin note.
+  0x30d3,
+  0x30cb,
+  0x30c3,
+  0x30c8,
 ];
 
 function range(from, to) {

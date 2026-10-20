@@ -42,7 +42,7 @@ export function JdMatchForm({ disabled, onMatch }: JdMatchFormProps) {
         <button
           type="submit"
           disabled={disabled || !isLongEnough}
-          className="h-9 rounded-sm bg-accent px-4 text-sm font-medium text-background transition-colors hover:bg-accent-text disabled:bg-line-strong disabled:text-fg-muted"
+          className="h-9 rounded-sm bg-accent px-4 text-sm font-medium text-on-accent transition-colors hover:bg-accent-deep disabled:bg-line-strong disabled:text-fg-muted"
         >
           Match
         </button>

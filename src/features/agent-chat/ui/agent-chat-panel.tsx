@@ -25,6 +25,8 @@ type AgentChatPanelProps = {
   runToolsAutomatically: boolean;
   /** Extra control in the input row, supplied by another feature (the JD paperclip). */
   composerAccessory?: ReactNode;
+  /** Decorative scenery pinned to the bottom of the conversation area, behind it. */
+  backdrop?: ReactNode;
 };
 
 export function AgentChatPanel({
@@ -32,6 +34,7 @@ export function AgentChatPanel({
   onUiAction,
   runToolsAutomatically,
   composerAccessory,
+  backdrop,
 }: AgentChatPanelProps) {
   const { messages, sendMessage, regenerate, status, error } = useChat({
     chat: agentChat,
@@ -56,36 +59,44 @@ export function AgentChatPanel({
 
   return (
     <div className="flex h-full flex-col">
-      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4">
-        <div className="space-y-1">
-          <p className="font-mono text-[11px] text-fg-muted">assistant</p>
-          <p className="rounded-sm border border-line bg-raised p-3 text-sm leading-relaxed">
-            Hi, I&apos;m the assistant on {profile.name}&apos;s portfolio. Ask about his
-            projects, his experience, or how this site was built — or pick one below.
-          </p>
-        </div>
-        {/* Before the first exchange the chips sit right under the greeting. */}
-        {!hasMessages && suggestions}
-        {/* aria-busy holds announcements until a streamed answer is complete. */}
-        <ul
-          aria-live="polite"
-          aria-busy={isBusy}
-          aria-label="Conversation"
-          className="space-y-4"
-        >
-          {messages.map((message) => (
-            <ChatMessage key={message.id} message={message} onUiAction={onUiAction} />
-          ))}
-        </ul>
-        {status === "submitted" && <ThinkingIndicator />}
-        {chatError && (
-          <ChatErrorNotice
-            error={chatError}
-            onShowContact={() => onUiAction({ type: "showContact" })}
-            onRetry={() => regenerate()}
-          />
+      {/* The backdrop stays put while the conversation scrolls over it. */}
+      <div className="relative min-h-0 flex-1">
+        {backdrop && (
+          <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0">
+            {backdrop}
+          </div>
         )}
-        <div ref={endRef} />
+        <div className="relative h-full space-y-4 overflow-y-auto p-4">
+          <div className="space-y-1">
+            <p className="font-mono text-[11px] text-fg-muted">assistant</p>
+            <p className="rounded-sm border border-line bg-raised p-3 text-sm leading-relaxed">
+              Hi, I&apos;m the assistant on {profile.name}&apos;s portfolio. Ask about his
+              projects, his experience, or how this site was built — or pick one below.
+            </p>
+          </div>
+          {/* Before the first exchange the chips sit right under the greeting. */}
+          {!hasMessages && suggestions}
+          {/* aria-busy holds announcements until a streamed answer is complete. */}
+          <ul
+            aria-live="polite"
+            aria-busy={isBusy}
+            aria-label="Conversation"
+            className="space-y-4"
+          >
+            {messages.map((message) => (
+              <ChatMessage key={message.id} message={message} onUiAction={onUiAction} />
+            ))}
+          </ul>
+          {status === "submitted" && <ThinkingIndicator />}
+          {chatError && (
+            <ChatErrorNotice
+              error={chatError}
+              onShowContact={() => onUiAction({ type: "showContact" })}
+              onRetry={() => regenerate()}
+            />
+          )}
+          <div ref={endRef} />
+        </div>
       </div>
 
       {hasMessages && (

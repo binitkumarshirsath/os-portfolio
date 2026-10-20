@@ -55,7 +55,7 @@ export function ChatComposer({
         type="submit"
         aria-label="Send"
         disabled={!canSend || !question}
-        className="grid size-10 shrink-0 place-items-center rounded-sm bg-accent text-background transition-colors hover:bg-accent-text disabled:bg-line-strong disabled:text-fg-muted"
+        className="grid size-10 shrink-0 place-items-center rounded-sm bg-accent text-on-accent transition-colors hover:bg-accent-deep disabled:bg-line-strong disabled:text-fg-muted"
       >
         <ArrowUp aria-hidden className="size-4" />
       </button>

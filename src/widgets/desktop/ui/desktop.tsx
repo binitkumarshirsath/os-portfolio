@@ -9,7 +9,7 @@ import {
   useWindowStore,
   type WindowId,
 } from "@/features/window-manager";
-import { SunBackdrop } from "./sun-backdrop";
+import { InkLandscape } from "./ink-landscape";
 
 type DesktopProps = {
   bodies: Record<WindowId, ReactNode>;
@@ -30,7 +30,7 @@ export function Desktop({ bodies }: DesktopProps) {
     // --hero-end: the hero's right edge plus a gap. The chat window sizes itself
     // against it, so it grows on wide screens without covering the hero buttons.
     <main className="relative min-h-0 flex-1 overflow-hidden [--hero-end:368px] xl:[--hero-end:484px]">
-      <SunBackdrop />
+      <InkLandscape />
 
       <div className="absolute top-1/2 left-12 w-[19rem] -translate-y-1/2 xl:left-20 xl:w-[24rem]">
         <ProfileHero />

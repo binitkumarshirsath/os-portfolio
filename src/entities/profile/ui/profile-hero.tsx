@@ -16,13 +16,31 @@ const currentRole = experience.find((role) => role.end === "Present");
  */
 export function ProfileHero({ compact = false }: ProfileHeroProps) {
   return (
-    <section aria-labelledby="hero-name" className={compact ? "space-y-3" : "space-y-5"}>
+    <section
+      aria-labelledby="hero-name"
+      className={`relative ${compact ? "space-y-3" : "space-y-5"}`}
+    >
+      {!compact && (
+        // His name in katakana, set vertically in the margin like an anime title card.
+        // Decorative: the real name is the heading below.
+        <span
+          aria-hidden
+          className="absolute top-12 -left-10 font-display text-sm font-semibold tracking-[0.35em] text-accent [writing-mode:vertical-rl]"
+        >
+          ビニット
+        </span>
+      )}
       <p className="flex items-center gap-3 font-mono text-xs tracking-[0.14em] whitespace-nowrap text-accent-text uppercase">
         <span aria-hidden className="h-px w-6 shrink-0 bg-accent" />
         {/* One line whatever the font: wrapping here shifted the whole page once
             JetBrains Mono replaced its wider fallback (measured CLS 0.24). */}
         <span className="truncate">
-          {profile.role} · {profile.level} · {profile.location.split(",")[0]}
+          {profile.role} · {profile.level}
+          {/* The desktop hero column is narrowest at lg, so the city waits for xl there. */}
+          <span className={compact ? "" : "hidden xl:inline"}>
+            {" "}
+            · {profile.location.split(",")[0]}
+          </span>
         </span>
       </p>
       <h1

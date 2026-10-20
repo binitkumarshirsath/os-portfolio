@@ -6,6 +6,7 @@ import { QuickActionChips, type QuickAction } from "@/features/quick-actions";
 import { runUiAction } from "@/features/window-manager";
 import { useIsDesktop } from "@/shared/lib";
 import { matchJobDescription } from "../model/match-job-description";
+import { ChatScenery } from "./chat-scenery";
 
 // The two features don't know about each other; this is where they meet.
 function handleQuickAction(quickAction: QuickAction) {
@@ -23,6 +24,7 @@ export function ChatWindow() {
       onUiAction={runUiAction}
       runToolsAutomatically={isDesktop}
       composerAccessory={<JdAttachButton onMatch={matchJobDescription} />}
+      backdrop={<ChatScenery withSun={!isDesktop} />}
     />
   );
 }

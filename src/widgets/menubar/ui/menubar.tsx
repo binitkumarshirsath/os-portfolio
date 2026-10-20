@@ -2,6 +2,7 @@
 
 import { useAgentStatus, type AgentStatus } from "@/features/agent-chat";
 import { useWindowStore, type WindowId } from "@/features/window-manager";
+import { HankoSeal } from "@/shared/ui";
 import { Clock } from "./clock";
 
 const menuItems: { label: string; windowId: WindowId }[] = [
@@ -21,9 +22,12 @@ export function Menubar() {
   const agentStatus = useAgentStatus();
 
   return (
-    <header className="relative z-50 flex h-8 shrink-0 items-center justify-between border-b border-line bg-background/70 px-4 font-mono text-xs backdrop-blur-md">
+    <header className="relative z-50 flex h-8 shrink-0 items-center justify-between border-b border-line bg-background/85 px-4 font-mono text-xs">
       <div className="flex items-center gap-6">
-        <span className="font-semibold tracking-[0.25em] text-accent">BINIT · OS</span>
+        <span className="flex items-center gap-2">
+          <HankoSeal />
+          <span className="font-display text-sm font-semibold text-fg">Binit OS</span>
+        </span>
         <nav aria-label="Main">
           <ul className="flex gap-1">
             {menuItems.map((item) => (

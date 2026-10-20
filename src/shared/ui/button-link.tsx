@@ -6,7 +6,7 @@ type ButtonLinkProps = AnchorHTMLAttributes<HTMLAnchorElement> & {
 };
 
 const variants = {
-  primary: "bg-accent text-background hover:bg-accent-text",
+  primary: "bg-accent text-on-accent hover:bg-accent-deep",
   secondary:
     "border border-line-strong text-fg hover:border-accent hover:text-accent-text",
 } as const;
