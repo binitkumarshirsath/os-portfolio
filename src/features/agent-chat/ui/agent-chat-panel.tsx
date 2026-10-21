@@ -41,21 +41,31 @@ export function AgentChatPanel({
   });
   const remaining = useChatQuota((state) => state.remaining);
   const endRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
 
   const isBusy = status === "submitted" || status === "streaming";
   const isOutOfQuota = remaining === 0;
   const chatError = describeChatError(error);
   const hasMessages = messages.length > 0;
-  // Changes on every streamed token, so the view follows a growing answer.
-  const lastMessageSize = JSON.stringify(messages.at(-1)?.parts ?? []).length;
-
   useEffect(() => {
     if (runToolsAutomatically) return connectToolRunner(onUiAction);
   }, [runToolsAutomatically, onUiAction]);
 
+  // Follow the conversation as it grows: new messages, streamed tokens, and answers
+  // still being revealed word by word after the stream itself has finished.
+  useEffect(() => {
+    const list = listRef.current;
+    if (!list) return;
+    const follow = new ResizeObserver(() =>
+      endRef.current?.scrollIntoView({ block: "end" }),
+    );
+    follow.observe(list);
+    return () => follow.disconnect();
+  }, []);
+
   useEffect(() => {
     endRef.current?.scrollIntoView({ block: "end" });
-  }, [messages.length, lastMessageSize, status]);
+  }, [status]);
 
   return (
     <div className="flex h-full flex-col">
@@ -78,13 +88,19 @@ export function AgentChatPanel({
           {!hasMessages && suggestions}
           {/* aria-busy holds announcements until a streamed answer is complete. */}
           <ul
+            ref={listRef}
             aria-live="polite"
             aria-busy={isBusy}
             aria-label="Conversation"
             className="space-y-4"
           >
-            {messages.map((message) => (
-              <ChatMessage key={message.id} message={message} onUiAction={onUiAction} />
+            {messages.map((message, index) => (
+              <ChatMessage
+                key={message.id}
+                message={message}
+                isStreaming={isBusy && index === messages.length - 1}
+                onUiAction={onUiAction}
+              />
             ))}
           </ul>
           {status === "submitted" && <ThinkingIndicator />}

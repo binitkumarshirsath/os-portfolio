@@ -1,7 +1,9 @@
 import { isToolUIPart } from "ai";
 import { motion, useReducedMotion } from "motion/react";
+import { useState } from "react";
 import type { UiAction } from "@/shared/config/ui-actions";
 import type { AgentMessage } from "../model/agent-chat";
+import { useTypewriter } from "../model/use-typewriter";
 import { MessageText } from "./message-text";
 import { ToolCallChip } from "./tool-call-chip";
 
@@ -14,13 +16,19 @@ function messageText(message: AgentMessage): string {
 
 type ChatMessageProps = {
   message: AgentMessage;
+  /** True while this is the last message and a model answer is on its way. */
+  isStreaming: boolean;
   onUiAction: (action: UiAction) => void;
 };
 
-export function ChatMessage({ message, onUiAction }: ChatMessageProps) {
+export function ChatMessage({ message, isStreaming, onUiAction }: ChatMessageProps) {
   const isUser = message.role === "user";
   const source = message.metadata?.source;
-  const text = messageText(message);
+  // Decided once, on arrival: reopening the chat later shows past answers at once.
+  // The answer can appear while the status is still "submitted", hence isBusy upstream.
+  const [arrivedStreaming] = useState(!isUser && isStreaming);
+  const fullText = messageText(message);
+  const { shown: text, isTyping } = useTypewriter(fullText, arrivedStreaming);
   const toolParts = message.parts.filter(isToolUIPart);
 
   // A streaming answer is empty until its first tool call or token; the thinking dots cover that gap.
@@ -55,7 +63,15 @@ export function ChatMessage({ message, onUiAction }: ChatMessageProps) {
             isUser ? "border-accent-deep bg-accent-tint" : "border-line bg-raised"
           }`}
         >
-          <MessageText text={text} />
+          {isTyping ? (
+            // Screen readers get the whole answer at once, not each word as it appears.
+            <>
+              <span className="sr-only">{fullText}</span>
+              <span aria-hidden>{text}</span>
+            </>
+          ) : (
+            <MessageText text={text} />
+          )}
         </p>
       )}
     </motion.li>
